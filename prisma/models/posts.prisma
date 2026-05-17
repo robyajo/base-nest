@@ -1,0 +1,21 @@
+model Post {
+    id        String   @id @default(cuid())
+    title     String
+    content   String?  @db.Text
+    published Boolean  @default(false)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relasi balik ke model User (meski User ada di file user.prisma)
+    authorId String
+    author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+    // Relasi ke kategori
+    categories Category[]
+}
+
+model Category {
+    id    String @id @default(cuid())
+    name  String @unique
+    posts Post[]
+}
