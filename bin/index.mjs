@@ -203,7 +203,7 @@ if (flags.help) {
   console.log(`    ${pc.cyan('npx create-base-nestjs')} ${pc.green('<project-name>')} ${pc.yellow('[options]')}`);
   console.log();
   console.log(`  ${pc.bold('Options:')}`);
-  console.log(`    ${pc.yellow('-y, --yes')}     Use defaults for all prompts`);
+  console.log(`    ${pc.yellow('-y, --yes')}     Use default project name`);
   console.log(`    ${pc.yellow('-h, --help')}     Show this help`);
   console.log(`    ${pc.yellow('-v, --version')}  Show version`);
   console.log();
@@ -221,7 +221,10 @@ showBanner();
 let projectName = argProjectName;
 
 if (!projectName) {
-  const response = await prompts({
+  if (flags.yes) {
+    projectName = 'my-nest-api';
+  } else {
+    const response = await prompts({
     type: 'text',
     name: 'value',
     message: 'Project name:',
@@ -239,6 +242,7 @@ if (!projectName) {
   });
 
   projectName = response.value.trim();
+  }
 }
 
 const targetDir = resolve(cwd(), projectName);
@@ -271,37 +275,9 @@ console.log();
 
 // ─── Steps ─────────────────────────────────────────────
 
-let installDeps = flags.yes;
-let initGit = flags.yes;
-
-if (!flags.yes) {
-  const { install } = await prompts({
-    type: 'confirm',
-    name: 'value',
-    message: 'Install dependencies?',
-    initial: true,
-  }, {
-    onCancel: () => { installDeps = false; },
-  });
-  installDeps = install;
-
-  console.log();
-
-  const { git } = await prompts({
-    type: 'confirm',
-    name: 'value',
-    message: 'Initialize a git repository?',
-    initial: true,
-  }, {
-    onCancel: () => { initGit = false; },
-  });
-  initGit = git;
-}
-
 console.log();
 
-// Calculate total steps
-const totalSteps = 2 + (installDeps ? 1 : 0) + (initGit ? 1 : 0);
+const totalSteps = 4;
 initStepCounter(totalSteps);
 
 // ── Step 1: Download ──
@@ -363,27 +339,19 @@ await runStepAsync('Preparing project', async () => {
   writeFileSync(pkgPath, JSON.stringify(ordered, null, 2) + '\n');
 });
 
-// ── Step 3: Install (optional) ──
-if (installDeps) {
-  await runStepAsync('Installing dependencies', async () => {
-    execSync('npm install', { cwd: targetDir, stdio: 'pipe', timeout: 300000 });
-  }, { spinner: pulseFrames });
-} else {
-  skipStep('Installing dependencies');
-}
+// ── Step 3: Install ──
+await runStepAsync('Installing dependencies', async () => {
+  execSync('npm install', { cwd: targetDir, stdio: 'pipe', timeout: 300000 });
+}, { spinner: pulseFrames });
 
-// ── Step 4: Git init (optional) ──
-if (initGit) {
-  await runStepAsync('Initializing git repository', async () => {
-    execSync('git init && git add -A && git commit -m "chore: scaffold from base-nest template"', {
-      cwd: targetDir,
-      stdio: 'pipe',
-      timeout: 30000,
-    });
+// ── Step 4: Git init ──
+await runStepAsync('Initializing git repository', async () => {
+  execSync('git init && git add -A && git commit -m "chore: scaffold from base-nest template"', {
+    cwd: targetDir,
+    stdio: 'pipe',
+    timeout: 30000,
   });
-} else {
-  skipStep('Initializing git repository');
-}
+});
 
 // ─── Final output ──────────────────────────────────────
 
@@ -395,7 +363,6 @@ showBox([
   pc.dim('  Next steps:'),
   '',
   `  ${pc.cyan('cd')} ${projectName}`,
-  ...(installDeps ? [] : [`  ${pc.cyan('npm install')}`]),
   `  ${pc.cyan('cp .env.example .env')}`,
   `  ${pc.dim('# Edit .env with your configuration')}`,
   `  ${pc.cyan('npx prisma migrate dev')}`,

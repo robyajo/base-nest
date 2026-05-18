@@ -10,3 +10,5 @@
 - [Rewritten] README.md - ubah fokus ke npm package (CLI tool) dengan quick start, what you get, dan referensi template GitHub
 - [Created] release.sh - script release otomatis: bump version (patch→auto-minor), input release notes, update CHANGELOG.md, git tag, publish ke npm, push ke remote
 - [Fixed] bin/index.mjs - spinner definition jadi object {interval, frames} (ora v8 butuh format ini, bukan array)
+- [Fixed] bin/index.mjs - removeRecursive pake rmSync(dir, {recursive, force}) ganti manual loop (ERR_FS_EISDIR)
+- [Simplified] bin/index.mjs - hapus prompt install deps & git init, sekarang otomatis jalan + node_modules langsung ada di project hasil generate
