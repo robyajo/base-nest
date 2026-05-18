@@ -1,6 +1,6 @@
 {
   "name": "create-base-nestjs",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Scaffold a production-ready NestJS backend with JWT + OAuth2 auth, Prisma ORM, and more",
   "author": "",
   "license": "UNLICENSED",
