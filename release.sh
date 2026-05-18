@@ -68,8 +68,17 @@ while IFS= read -r LINE; do
 done
 
 if [ ${#NOTES[@]} -eq 0 ]; then
-  warn "No release notes provided."
-  NOTES=("No release notes.")
+  info "Generating release notes from git history..."
+  if [ -n "$LAST_TAG" ]; then
+    while IFS= read -r LINE; do
+      NOTES+=("$LINE")
+    done < <(git log "$LAST_TAG..HEAD" --oneline --no-decorate 2>/dev/null | sed 's/^/- /')
+  else
+    while IFS= read -r LINE; do
+      NOTES+=("$LINE")
+    done < <(git log --oneline --max-count=10 --no-decorate 2>/dev/null | sed 's/^/- /')
+  fi
+  ok "Generated ${#NOTES[@]} entries from git log"
 fi
 
 echo ""
