@@ -5,10 +5,11 @@ Scaffold a production-ready **NestJS 11** backend with authentication (JWT + OAu
 ```bash
 npx create-base-nestjs my-project
 cd my-project
-cp .env.example .env
 npx prisma migrate dev
 npm run start:dev
 ```
+
+> `.env` otomatis dibuat dari `.env.example` dengan `JWT_SECRET` dan `JWT_REFRESH_SECRET` acak.
 
 ---
 
@@ -18,19 +19,34 @@ npm run start:dev
 npx create-base-nestjs <project-name>
 ```
 
-You'll be prompted to confirm install & git init. Use `--yes` to skip prompts:
+Project langsung siap pakai — `npm install`, `git init`, dan `.env` dengan JWT secrets random sudah otomatis.
 
 ```bash
-npx create-base-nestjs my-project --yes
+npx create-base-nestjs my-project --yes   # pakai default nama "my-nest-api"
 ```
 
 ### Options
 
 | Flag | Description |
 |---|---|
-| `-y, --yes` | Skip prompts, use defaults |
+| `-y, --yes` | Use default project name |
+| `-j, --jwt-secret` | Generate secure JWT secret (`JWT_SECRET` + `JWT_REFRESH_SECRET`) |
 | `-h, --help` | Show help |
 | `-v, --version` | Show CLI version |
+
+### Generate JWT Secret Manual
+
+Butuh secret baru tanpa buat project? Gunakan `--jwt-secret`:
+
+```bash
+npx create-base-nestjs --jwt-secret
+
+# Output:
+#   JWT_SECRET=d6c341fde02724dc2ce6da0eaad099bbb8a2544538726b9b2f99681b7f6b8404
+#   JWT_REFRESH_SECRET=babf6c138a49c2ac91a1606ee302a68fdc775e986d7ef519c91f8658e1797385
+```
+
+Cocok untuk mengganti secret di project yang sudah ada, atau generate ulang jika secret bocor.
 
 ---
 
@@ -94,11 +110,14 @@ src/
 
 ## Environment Variables
 
+> `JWT_SECRET` dan `JWT_REFRESH_SECRET` otomatis di-generate saat scaffolding.  
+> Untuk generate manual: `npx create-base-nestjs --jwt-secret`
+
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `DATABASE_URL` | Yes | - | PostgreSQL connection |
-| `JWT_SECRET` | Yes | - | JWT access token secret |
-| `JWT_REFRESH_SECRET` | Yes | - | JWT refresh token secret |
+| `JWT_SECRET` | Yes | (auto) | JWT access token secret |
+| `JWT_REFRESH_SECRET` | Yes | (auto) | JWT refresh token secret |
 | `PORT` | No | `8000` | App port |
 | `JWT_ACCESS_EXPIRY` | No | `15m` | Access token TTL |
 | `JWT_REFRESH_EXPIRY` | No | `7d` | Refresh token TTL |

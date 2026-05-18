@@ -5,7 +5,8 @@ import prompts from 'prompts';
 import pc from 'picocolors';
 import ora from 'ora';
 import gradient from 'gradient-string';
-import { readFileSync, writeFileSync, existsSync, rmSync, statSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
+import { readFileSync, writeFileSync, copyFileSync, existsSync, rmSync, statSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { resolve, join, basename } from 'node:path';
 import { argv, exit, cwd, version as nodeVersion, hrtime } from 'node:process';
@@ -46,6 +47,10 @@ function elapsed(start) {
 
 function padRight(str, len) {
   return str + ' '.repeat(Math.max(0, len - str.length));
+}
+
+function generateSecret() {
+  return randomBytes(32).toString('hex');
 }
 
 // ─── Custom spinner frames ─────────────────────────────
@@ -188,11 +193,25 @@ const flags = {
   yes: args.includes('--yes') || args.includes('-y'),
   help: args.includes('--help') || args.includes('-h'),
   version: args.includes('--version') || args.includes('-v'),
+  jwtSecret: args.includes('--jwt-secret') || args.includes('-j'),
 };
 let argProjectName = args.find(a => !a.startsWith('-'));
 
 if (flags.version) {
   console.log(pkg.version);
+  exit(0);
+}
+
+if (flags.jwtSecret) {
+  const secret = generateSecret();
+  console.log();
+  console.log(pc.bold('  JWT Secret:'));
+  console.log();
+  console.log(`  ${pc.cyan('JWT_SECRET')}=${secret}`);
+  console.log(`  ${pc.cyan('JWT_REFRESH_SECRET')}=${generateSecret()}`);
+  console.log();
+  console.log(`  ${pc.dim('Copy these values into your .env file.')}`);
+  console.log();
   exit(0);
 }
 
@@ -203,13 +222,15 @@ if (flags.help) {
   console.log(`    ${pc.cyan('npx create-base-nestjs')} ${pc.green('<project-name>')} ${pc.yellow('[options]')}`);
   console.log();
   console.log(`  ${pc.bold('Options:')}`);
-  console.log(`    ${pc.yellow('-y, --yes')}     Use default project name`);
-  console.log(`    ${pc.yellow('-h, --help')}     Show this help`);
-  console.log(`    ${pc.yellow('-v, --version')}  Show version`);
+  console.log(`    ${pc.yellow('-y, --yes')}         Use default project name`);
+  console.log(`    ${pc.yellow('-j, --jwt-secret')}  Generate a secure JWT secret and exit`);
+  console.log(`    ${pc.yellow('-h, --help')}         Show this help`);
+  console.log(`    ${pc.yellow('-v, --version')}      Show version`);
   console.log();
   console.log(`  ${pc.bold('Examples:')}`);
   console.log(`    ${pc.cyan('npx create-base-nestjs my-api')}`);
   console.log(`    ${pc.cyan('npx create-base-nestjs --yes')}`);
+  console.log(`    ${pc.cyan('npx create-base-nestjs --jwt-secret')}`);
   console.log();
   exit(0);
 }
@@ -337,6 +358,17 @@ await runStepAsync('Preparing project', async () => {
   }
 
   writeFileSync(pkgPath, JSON.stringify(ordered, null, 2) + '\n');
+
+  // Copy .env.example → .env and inject secrets
+  const envExamplePath = join(targetDir, '.env.example');
+  const envPath = join(targetDir, '.env');
+  if (existsSync(envExamplePath)) {
+    let envContent = readFileSync(envExamplePath, 'utf-8');
+    envContent = envContent
+      .replace(/^JWT_SECRET=.*$/m, `JWT_SECRET=${generateSecret()}`)
+      .replace(/^JWT_REFRESH_SECRET=.*$/m, `JWT_REFRESH_SECRET=${generateSecret()}`);
+    writeFileSync(envPath, envContent);
+  }
 });
 
 // ── Step 3: Install ──
@@ -363,8 +395,6 @@ showBox([
   pc.dim('  Next steps:'),
   '',
   `  ${pc.cyan('cd')} ${projectName}`,
-  `  ${pc.cyan('cp .env.example .env')}`,
-  `  ${pc.dim('# Edit .env with your configuration')}`,
   `  ${pc.cyan('npx prisma migrate dev')}`,
   `  ${pc.cyan('npm run start:dev')}`,
   '',
