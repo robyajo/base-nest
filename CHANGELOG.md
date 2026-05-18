@@ -1,5 +1,6 @@
 # Changelog
 
+## [1.1.1] - 2026-05-18\n\n- - eebeebd feat: add project scaffolding CLI with PostgreSQL migration support\n\n---\n
 ## [1.1.0] - 2026-05-18\n\n- - 04f0a7c fix: update migration_lock.toml and purge legacy SQLite migrations during PostgreSQL setup\n\n---\n
 ## [1.0.9] - 2026-05-18\n\n- - 31b0f05 feat: add Prisma client generation step to scaffolding process and increment version to 1.0.8\n\n---\n
 ## [1.0.8] - 2026-05-18\n\n- - 257a47f feat: add PostgreSQL support and automated migration tooling to CLI and Prisma service configuration\n\n---\n
