@@ -1,4 +1,19 @@
-import { Controller, Get, Post, Patch, Body, Query, HttpCode, HttpStatus, BadRequestException, UseInterceptors, UploadedFile, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Query,
+  HttpCode,
+  HttpStatus,
+  BadRequestException,
+  UseInterceptors,
+  UploadedFile,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -7,13 +22,21 @@ import { extname, join } from 'node:path';
 import { AuthService } from './auth.service';
 
 import {
-  RegisterSchema, LoginSchema, RefreshTokenSchema,
-  ForgotPasswordSchema, ResetPasswordSchema, ChangePasswordSchema,
+  RegisterSchema,
+  LoginSchema,
+  RefreshTokenSchema,
+  ForgotPasswordSchema,
+  ResetPasswordSchema,
+  ChangePasswordSchema,
   UpdateProfileSchema,
 } from './schemas/auth.schema';
 import type {
-  RegisterDto, LoginDto, RefreshTokenDto,
-  ForgotPasswordDto, ResetPasswordDto, ChangePasswordDto,
+  RegisterDto,
+  LoginDto,
+  RefreshTokenDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+  ChangePasswordDto,
   UpdateProfileDto,
 } from './schemas/auth.schema';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -43,13 +66,19 @@ export class AuthController {
     const clientUrl = process.env.CLIENT_URL ?? 'http://localhost:3000';
 
     if (!req.user) {
-      return res.redirect(`${clientUrl}/oauth/callback?error=${(req.query.error as string) || 'authentication_failed'}`);
+      return res.redirect(
+        `${clientUrl}/oauth/callback?error=${(req.query.error as string) || 'authentication_failed'}`,
+      );
     }
 
     try {
       const ip = req.ip ?? req.socket?.remoteAddress;
       const userAgent = req.headers['user-agent'];
-      const result = await this.authService.googleLogin(req.user as GoogleProfile, ip, userAgent);
+      const result = await this.authService.googleLogin(
+        req.user as GoogleProfile,
+        ip,
+        userAgent,
+      );
       const redirectUrl = `${clientUrl}/oauth/callback?accessToken=${result.tokens.accessToken}&refreshToken=${result.tokens.refreshToken}`;
       res.redirect(redirectUrl);
     } catch {
@@ -71,13 +100,19 @@ export class AuthController {
     const clientUrl = process.env.CLIENT_URL ?? 'http://localhost:3000';
 
     if (!req.user) {
-      return res.redirect(`${clientUrl}/oauth/callback?error=${(req.query.error as string) || 'authentication_failed'}`);
+      return res.redirect(
+        `${clientUrl}/oauth/callback?error=${(req.query.error as string) || 'authentication_failed'}`,
+      );
     }
 
     try {
       const ip = req.ip ?? req.socket?.remoteAddress;
       const userAgent = req.headers['user-agent'];
-      const result = await this.authService.discordLogin(req.user as DiscordProfile, ip, userAgent);
+      const result = await this.authService.discordLogin(
+        req.user as DiscordProfile,
+        ip,
+        userAgent,
+      );
       const redirectUrl = `${clientUrl}/oauth/callback?accessToken=${result.tokens.accessToken}&refreshToken=${result.tokens.refreshToken}`;
       res.redirect(redirectUrl);
     } catch {
@@ -87,7 +122,9 @@ export class AuthController {
 
   @Public()
   @Post('register')
-  async register(@Body(new ZodValidationPipe(RegisterSchema)) dto: RegisterDto) {
+  async register(
+    @Body(new ZodValidationPipe(RegisterSchema)) dto: RegisterDto,
+  ) {
     const { confirmPassword: _, ...payload } = dto;
     return this.authService.register(payload);
   }
@@ -107,7 +144,9 @@ export class AuthController {
   @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  async refreshToken(@Body(new ZodValidationPipe(RefreshTokenSchema)) dto: RefreshTokenDto) {
+  async refreshToken(
+    @Body(new ZodValidationPipe(RefreshTokenSchema)) dto: RefreshTokenDto,
+  ) {
     return this.authService.refreshToken(dto.refreshToken);
   }
 
@@ -133,14 +172,18 @@ export class AuthController {
   @Public()
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
-  async forgotPassword(@Body(new ZodValidationPipe(ForgotPasswordSchema)) dto: ForgotPasswordDto) {
+  async forgotPassword(
+    @Body(new ZodValidationPipe(ForgotPasswordSchema)) dto: ForgotPasswordDto,
+  ) {
     return this.authService.forgotPassword(dto.email);
   }
 
   @Public()
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
-  async resetPassword(@Body(new ZodValidationPipe(ResetPasswordSchema)) dto: ResetPasswordDto) {
+  async resetPassword(
+    @Body(new ZodValidationPipe(ResetPasswordSchema)) dto: ResetPasswordDto,
+  ) {
     const { confirmPassword: _, ...payload } = dto;
     return this.authService.resetPassword(payload.token, payload.password);
   }
@@ -151,7 +194,11 @@ export class AuthController {
     @CurrentUser() user: JwtPayload,
     @Body(new ZodValidationPipe(ChangePasswordSchema)) dto: ChangePasswordDto,
   ) {
-    return this.authService.changePassword(user.sub, dto.currentPassword, dto.newPassword);
+    return this.authService.changePassword(
+      user.sub,
+      dto.currentPassword,
+      dto.newPassword,
+    );
   }
 
   @Patch('profile')
@@ -187,7 +234,9 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Body(new ZodValidationPipe(RefreshTokenSchema)) dto: RefreshTokenDto) {
+  async logout(
+    @Body(new ZodValidationPipe(RefreshTokenSchema)) dto: RefreshTokenDto,
+  ) {
     await this.authService.logout(dto.refreshToken);
     return { message: 'Logged out successfully' };
   }

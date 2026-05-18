@@ -10,8 +10,10 @@ export class MailService {
   private readonly appUrl: string;
 
   constructor(configService: ConfigService) {
-    this.fromAddress = configService.get<string>('MAIL_FROM') ?? 'noreply@vynix.com';
-    this.appUrl = configService.get<string>('APP_URL') ?? 'http://localhost:8000';
+    this.fromAddress =
+      configService.get<string>('MAIL_FROM') ?? 'noreply@vynix.com';
+    this.appUrl =
+      configService.get<string>('APP_URL') ?? 'http://localhost:8000';
 
     const host = configService.get<string>('MAIL_HOST');
     const port = configService.get<number>('MAIL_PORT');

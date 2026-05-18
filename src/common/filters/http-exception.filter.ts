@@ -1,4 +1,11 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
 import { Response } from 'express';
 
 interface MulterError extends Error {
@@ -51,7 +58,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
             }
           }
           body.errors = fieldErrors;
-        } else if (typeof resp.message === 'string' && resp.message.includes('Unexpected end of form')) {
+        } else if (
+          typeof resp.message === 'string' &&
+          resp.message.includes('Unexpected end of form')
+        ) {
           status = HttpStatus.BAD_REQUEST;
           body.message = 'Validation failed';
           body.errors = {
@@ -72,7 +82,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
         status = HttpStatus.BAD_REQUEST;
         body.message = 'Validation failed';
         body.errors = {
-          _root: ['At least one field must be provided. Available: displayName, avatarUrl, bio, whatsapp, instagram, tiktok, youtube, website'],
+          _root: [
+            'At least one field must be provided. Available: displayName, avatarUrl, bio, whatsapp, instagram, tiktok, youtube, website',
+          ],
         };
       } else {
         body.message = exception.message;
@@ -80,12 +92,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
 
     if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
-      this.logger.error(exception instanceof Error ? exception.stack : exception);
+      this.logger.error(
+        exception instanceof Error ? exception.stack : exception,
+      );
     }
 
     const isSocketIo = request.url?.startsWith('/socket.io/');
     if (!isSocketIo || status !== HttpStatus.NOT_FOUND) {
-      this.logger.error(`${request.method} ${request.url} ${status} - ${body.message}`);
+      this.logger.error(
+        `${request.method} ${request.url} ${status} - ${body.message}`,
+      );
     }
 
     response.status(status).json(body);

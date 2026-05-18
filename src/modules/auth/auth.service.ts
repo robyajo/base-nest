@@ -1,18 +1,28 @@
-import { Injectable, ConflictException, UnauthorizedException, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  UnauthorizedException,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'node:crypto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
-import type { RegisterDto, LoginDto, UpdateProfileDto } from './schemas/auth.schema';
+import type {
+  RegisterDto,
+  LoginDto,
+  UpdateProfileDto,
+} from './schemas/auth.schema';
 type RegisterPayload = Omit<RegisterDto, 'confirmPassword'>;
 import { AuthTokens, AuthResponse } from './interfaces/auth.interface';
 import { JwtPayload } from 'src/common/interfaces/app.interface';
 import type { GoogleProfile } from './strategies/google.strategy';
 import type { DiscordProfile } from './strategies/discord.strategy';
 import { UserRole } from 'generated/prisma/enums';
-
 
 @Injectable()
 export class AuthService {
@@ -29,10 +39,14 @@ export class AuthService {
     private mailService: MailService,
     configService: ConfigService,
   ) {
-    this.refreshTokenSecret = configService.getOrThrow<string>('JWT_REFRESH_SECRET');
-    this.accessTokenExpiry = configService.getOrThrow<string>('JWT_ACCESS_EXPIRY');
-    this.refreshTokenExpiry = configService.getOrThrow<string>('JWT_REFRESH_EXPIRY');
-    this.verificationCooldown = configService.get<number>('VERIFICATION_COOLDOWN') ?? 60;
+    this.refreshTokenSecret =
+      configService.getOrThrow<string>('JWT_REFRESH_SECRET');
+    this.accessTokenExpiry =
+      configService.getOrThrow<string>('JWT_ACCESS_EXPIRY');
+    this.refreshTokenExpiry =
+      configService.getOrThrow<string>('JWT_REFRESH_EXPIRY');
+    this.verificationCooldown =
+      configService.get<number>('VERIFICATION_COOLDOWN') ?? 60;
   }
 
   async register(dto: RegisterPayload): Promise<AuthResponse> {
@@ -59,24 +73,40 @@ export class AuthService {
       },
     });
 
-    const tokens = await this.generateTokens(user.id, user.email!, user.role);
+    const tokens = await this.generateTokens(user.id, user.email, user.role);
 
     const { passwordHash: _, ...userWithoutPassword } = user;
     return { user: userWithoutPassword, tokens };
   }
 
-  async login(dto: LoginDto, ip?: string, userAgent?: string): Promise<AuthResponse> {
+  async login(
+    dto: LoginDto,
+    ip?: string,
+    userAgent?: string,
+  ): Promise<AuthResponse> {
     const user = await this.prisma.user.findUnique({
       where: { username: dto.username },
     });
     if (!user) throw new UnauthorizedException('Invalid username or password');
-    if (!user.passwordHash) throw new UnauthorizedException('This account uses social login. Please sign in with Google or Discord.');
+    if (!user.passwordHash)
+      throw new UnauthorizedException(
+        'This account uses social login. Please sign in with Google or Discord.',
+      );
 
-    const isPasswordValid = await bcrypt.compare(dto.password, user.passwordHash);
-    if (!isPasswordValid) throw new UnauthorizedException('Invalid username or password');
-    if (!user.isActive) throw new UnauthorizedException('Account is deactivated');
+    const isPasswordValid = await bcrypt.compare(
+      dto.password,
+      user.passwordHash,
+    );
+    if (!isPasswordValid)
+      throw new UnauthorizedException('Invalid username or password');
+    if (!user.isActive)
+      throw new UnauthorizedException('Account is deactivated');
 
-    const tokens = await this.generateTokens(user.id, user.email ?? '', user.role);
+    const tokens = await this.generateTokens(
+      user.id,
+      user.email ?? '',
+      user.role,
+    );
 
     await this.logLogin(user.id, 'email', ip, userAgent);
 
@@ -103,7 +133,8 @@ export class AuthService {
         where: { id: payload.sub },
         select: { id: true, isActive: true },
       });
-      if (!user || !user.isActive) throw new UnauthorizedException('User not found or inactive');
+      if (!user || !user.isActive)
+        throw new UnauthorizedException('User not found or inactive');
 
       await this.prisma.refreshToken.delete({ where: { id: storedToken.id } });
 
@@ -120,8 +151,10 @@ export class AuthService {
       select: { id: true, email: true, emailVerified: true },
     });
     if (!user) throw new NotFoundException('User not found');
-    if (!user.email) throw new BadRequestException('No email associated with this account');
-    if (user.emailVerified) throw new BadRequestException('Email already verified');
+    if (!user.email)
+      throw new BadRequestException('No email associated with this account');
+    if (user.emailVerified)
+      throw new BadRequestException('Email already verified');
 
     await this.checkCooldown(userId, 'EMAIL_VERIFICATION');
 
@@ -143,9 +176,12 @@ export class AuthService {
     const record = await this.prisma.verificationToken.findUnique({
       where: { token },
     });
-    if (!record) throw new BadRequestException('Invalid or expired verification token');
-    if (record.type !== 'EMAIL_VERIFICATION') throw new BadRequestException('Invalid token type');
-    if (record.expiresAt < new Date()) throw new BadRequestException('Verification token has expired');
+    if (!record)
+      throw new BadRequestException('Invalid or expired verification token');
+    if (record.type !== 'EMAIL_VERIFICATION')
+      throw new BadRequestException('Invalid token type');
+    if (record.expiresAt < new Date())
+      throw new BadRequestException('Verification token has expired');
 
     await this.prisma.user.update({
       where: { id: record.userId },
@@ -158,7 +194,10 @@ export class AuthService {
   async forgotPassword(email: string): Promise<{ message: string }> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user || !user.isActive) {
-      return { message: 'If the email is registered, you will receive a password reset link' };
+      return {
+        message:
+          'If the email is registered, you will receive a password reset link',
+      };
     }
 
     await this.checkCooldown(user.id, 'PASSWORD_RESET');
@@ -170,14 +209,20 @@ export class AuthService {
       data: { token, userId: user.id, type: 'PASSWORD_RESET', expiresAt },
     });
 
-    this.mailService.sendPasswordResetEmail(user.email!, token).catch((err) => {
+    this.mailService.sendPasswordResetEmail(user.email, token).catch((err) => {
       console.error('Failed to send password reset email:', err);
     });
 
-    return { message: 'If the email is registered, you will receive a password reset link' };
+    return {
+      message:
+        'If the email is registered, you will receive a password reset link',
+    };
   }
 
-  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+  async resetPassword(
+    token: string,
+    newPassword: string,
+  ): Promise<{ message: string }> {
     const record = await this.prisma.verificationToken.findUnique({
       where: { token },
     });
@@ -196,7 +241,9 @@ export class AuthService {
       data: { passwordHash },
     });
 
-    await this.prisma.refreshToken.deleteMany({ where: { userId: record.userId } });
+    await this.prisma.refreshToken.deleteMany({
+      where: { userId: record.userId },
+    });
 
     await this.prisma.verificationToken.delete({ where: { id: record.id } });
 
@@ -210,10 +257,17 @@ export class AuthService {
   ): Promise<{ message: string }> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
-    if (!user.passwordHash) throw new BadRequestException('Social login accounts cannot change passwords via this method');
+    if (!user.passwordHash)
+      throw new BadRequestException(
+        'Social login accounts cannot change passwords via this method',
+      );
 
-    const isPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
-    if (!isPasswordValid) throw new BadRequestException('Current password is incorrect');
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.passwordHash,
+    );
+    if (!isPasswordValid)
+      throw new BadRequestException('Current password is incorrect');
 
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(newPassword, saltRounds);
@@ -267,13 +321,18 @@ export class AuthService {
     return result;
   }
 
-  async googleLogin(profile: GoogleProfile, ip?: string, userAgent?: string): Promise<AuthResponse> {
+  async googleLogin(
+    profile: GoogleProfile,
+    ip?: string,
+    userAgent?: string,
+  ): Promise<AuthResponse> {
     let user = await this.prisma.user.findUnique({
       where: { googleId: profile.googleId },
     });
 
     if (user) {
-      if (!user.isActive) throw new UnauthorizedException('Account is deactivated');
+      if (!user.isActive)
+        throw new UnauthorizedException('Account is deactivated');
 
       if (profile.avatarUrl && profile.avatarUrl !== user.avatarUrl) {
         user = await this.prisma.user.update({
@@ -287,22 +346,31 @@ export class AuthService {
       });
 
       if (user) {
-        if (!user.isActive) throw new UnauthorizedException('Account is deactivated');
+        if (!user.isActive)
+          throw new UnauthorizedException('Account is deactivated');
 
         user = await this.prisma.user.update({
           where: { id: user.id },
-          data: { googleId: profile.googleId, avatarUrl: profile.avatarUrl || user.avatarUrl },
+          data: {
+            googleId: profile.googleId,
+            avatarUrl: profile.avatarUrl || user.avatarUrl,
+          },
         });
       }
     }
 
     if (!user) {
       const baseUsername = profile.email
-        ? profile.email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '_')
+        ? profile.email
+            .split('@')[0]
+            .toLowerCase()
+            .replace(/[^a-z0-9_]/g, '_')
         : `user_${profile.googleId.slice(0, 8)}`;
       let username = baseUsername;
 
-      const existing = await this.prisma.user.findUnique({ where: { username } });
+      const existing = await this.prisma.user.findUnique({
+        where: { username },
+      });
       if (existing) {
         username = `${baseUsername}_${profile.googleId.slice(0, 6)}`;
       }
@@ -320,10 +388,16 @@ export class AuthService {
         },
       });
 
-      this.logger.log(`New user registered via Google: ${user.id} (${username})`);
+      this.logger.log(
+        `New user registered via Google: ${user.id} (${username})`,
+      );
     }
 
-    const tokens = await this.generateTokens(user.id, user.email ?? '', user.role);
+    const tokens = await this.generateTokens(
+      user.id,
+      user.email ?? '',
+      user.role,
+    );
 
     await this.logLogin(user.id, 'google', ip, userAgent);
 
@@ -331,13 +405,18 @@ export class AuthService {
     return { user: userWithoutPassword, tokens };
   }
 
-  async discordLogin(profile: DiscordProfile, ip?: string, userAgent?: string): Promise<AuthResponse> {
+  async discordLogin(
+    profile: DiscordProfile,
+    ip?: string,
+    userAgent?: string,
+  ): Promise<AuthResponse> {
     let user = await this.prisma.user.findUnique({
       where: { discordId: profile.discordId },
     });
 
     if (user) {
-      if (!user.isActive) throw new UnauthorizedException('Account is deactivated');
+      if (!user.isActive)
+        throw new UnauthorizedException('Account is deactivated');
 
       if (profile.avatarUrl && profile.avatarUrl !== user.avatarUrl) {
         user = await this.prisma.user.update({
@@ -351,20 +430,29 @@ export class AuthService {
       });
 
       if (user) {
-        if (!user.isActive) throw new UnauthorizedException('Account is deactivated');
+        if (!user.isActive)
+          throw new UnauthorizedException('Account is deactivated');
 
         user = await this.prisma.user.update({
           where: { id: user.id },
-          data: { discordId: profile.discordId, avatarUrl: profile.avatarUrl || user.avatarUrl },
+          data: {
+            discordId: profile.discordId,
+            avatarUrl: profile.avatarUrl || user.avatarUrl,
+          },
         });
       }
     }
 
     if (!user) {
-      const baseUsername = profile.username.toLowerCase().replace(/[^a-z0-9_]/g, '_').slice(0, 30);
+      const baseUsername = profile.username
+        .toLowerCase()
+        .replace(/[^a-z0-9_]/g, '_')
+        .slice(0, 30);
       let username = baseUsername;
 
-      const existing = await this.prisma.user.findUnique({ where: { username } });
+      const existing = await this.prisma.user.findUnique({
+        where: { username },
+      });
       if (existing) {
         username = `${baseUsername}_${profile.discordId.slice(0, 6)}`;
       }
@@ -382,10 +470,16 @@ export class AuthService {
         },
       });
 
-      this.logger.log(`New user registered via Discord: ${user.id} (${username})`);
+      this.logger.log(
+        `New user registered via Discord: ${user.id} (${username})`,
+      );
     }
 
-    const tokens = await this.generateTokens(user.id, user.email ?? '', user.role);
+    const tokens = await this.generateTokens(
+      user.id,
+      user.email ?? '',
+      user.role,
+    );
 
     await this.logLogin(user.id, 'discord', ip, userAgent);
 
@@ -393,13 +487,22 @@ export class AuthService {
     return { user: userWithoutPassword, tokens };
   }
 
-  private async logLogin(userId: string, method: string, ip?: string, userAgent?: string): Promise<void> {
+  private async logLogin(
+    userId: string,
+    method: string,
+    ip?: string,
+    userAgent?: string,
+  ): Promise<void> {
     await this.prisma.loginLog.create({
       data: { userId, method, ip: ip ?? null, userAgent: userAgent ?? null },
     });
   }
 
-  private async generateTokens(userId: string, email: string, role: UserRole): Promise<AuthTokens> {
+  private async generateTokens(
+    userId: string,
+    email: string,
+    role: UserRole,
+  ): Promise<AuthTokens> {
     const payload: JwtPayload = { sub: userId, email, role };
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -414,8 +517,10 @@ export class AuthService {
     ]);
 
     const tokenHash = this.hashToken(refreshToken);
-    const decoded = this.jwtService.decode(refreshToken) as { exp: number } | null;
-    const expiresAt = decoded ? new Date(decoded.exp * 1000) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const decoded = this.jwtService.decode(refreshToken);
+    const expiresAt = decoded
+      ? new Date(decoded.exp * 1000)
+      : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
     await this.prisma.refreshToken.create({
       data: { tokenHash, userId, expiresAt },
@@ -438,7 +543,9 @@ export class AuthService {
       const elapsed = (Date.now() - existingToken.createdAt.getTime()) / 1000;
       if (elapsed < this.verificationCooldown) {
         const remaining = Math.ceil(this.verificationCooldown - elapsed);
-        throw new BadRequestException(`Please wait ${remaining} seconds before requesting a new ${type.toLowerCase().replace('_', ' ')}`);
+        throw new BadRequestException(
+          `Please wait ${remaining} seconds before requesting a new ${type.toLowerCase().replace('_', ' ')}`,
+        );
       }
     }
 

@@ -16,9 +16,15 @@ export interface DiscordProfile {
 export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
   constructor(configService: ConfigService) {
     super({
-      clientID: configService.get<string>('DISCORD_CLIENT_ID') || 'mock-discord-client-id',
-      clientSecret: configService.get<string>('DISCORD_CLIENT_SECRET') || 'mock-discord-client-secret',
-      callbackURL: configService.get<string>('DISCORD_CALLBACK_URL') || 'http://localhost:8000/api/auth/discord/callback',
+      clientID:
+        configService.get<string>('DISCORD_CLIENT_ID') ||
+        'mock-discord-client-id',
+      clientSecret:
+        configService.get<string>('DISCORD_CLIENT_SECRET') ||
+        'mock-discord-client-secret',
+      callbackURL:
+        configService.get<string>('DISCORD_CALLBACK_URL') ||
+        'http://localhost:8000/api/auth/discord/callback',
       scope: ['identify', 'email'],
     });
   }

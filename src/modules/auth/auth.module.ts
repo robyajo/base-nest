@@ -18,7 +18,11 @@ import { DiscordStrategy } from './strategies/discord.strategy';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow<string>('JWT_SECRET'),
-        signOptions: { expiresIn: configService.getOrThrow<string>('JWT_ACCESS_EXPIRY') as never },
+        signOptions: {
+          expiresIn: configService.getOrThrow<string>(
+            'JWT_ACCESS_EXPIRY',
+          ) as never,
+        },
       }),
     }),
   ],

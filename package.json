@@ -1,10 +1,38 @@
 {
-  "name": "base-nest",
-  "version": "0.0.1",
-  "description": "",
+  "name": "create-base-nestjs",
+  "version": "1.0.0",
+  "description": "Scaffold a production-ready NestJS backend with JWT + OAuth2 auth, Prisma ORM, and more",
   "author": "",
-  "private": true,
   "license": "UNLICENSED",
+  "private": false,
+  "type": "commonjs",
+  "bin": {
+    "create-base-nestjs": "bin/index.mjs"
+  },
+  "files": [
+    "bin"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robyajo/base-nest.git"
+  },
+  "homepage": "https://github.com/robyajo/base-nest#readme",
+  "bugs": {
+    "url": "https://github.com/robyajo/base-nest/issues"
+  },
+  "keywords": [
+    "nestjs",
+    "backend",
+    "scaffold",
+    "boilerplate",
+    "jwt",
+    "oauth2",
+    "prisma",
+    "postgresql"
+  ],
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -20,6 +48,12 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "degit": "^2.8.4",
+    "ora": "^8.1.0",
+    "picocolors": "^1.1.1",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.1",
@@ -43,14 +77,12 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "socket.io": "^4.8.3",
-    "zod": "^4.4.3"
-  },
-  "devDependencies": {
+    "zod": "^4.4.3",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
-    "@nestjs/testing": "^11.0.1",
+    "@nestjs/testing": "^11.0.0",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
     "@types/multer": "^2.1.0",

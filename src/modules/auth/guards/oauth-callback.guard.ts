@@ -4,7 +4,9 @@ import { AuthGuard } from '@nestjs/passport';
 export function OAuthCallbackGuard(strategy: string) {
   class Guard extends AuthGuard(strategy) {
     canActivate(context: ExecutionContext) {
-      const request = context.switchToHttp().getRequest<{ query: Record<string, string> }>();
+      const request = context
+        .switchToHttp()
+        .getRequest<{ query: Record<string, string> }>();
       if (request.query.error) {
         return true;
       }
