@@ -7,3 +7,5 @@
 - [Modified] package.json - rename ke create-base-nestjs, tambah bin/files/engines, split deps (CLI di dependencies, NestJS di devDependencies), tambah gradient-string
 - [Moved] .env → .env.example - rename + sanitasi semua value jadi placeholder untuk template GitHub
 - [Modified] .env.example - mengganti credentials asli (Google OAuth, Discord OAuth, Mailtrap) dengan placeholder aman
+- [Rewritten] README.md - ubah fokus ke npm package (CLI tool) dengan quick start, what you get, dan referensi template GitHub
+- [Created] release.sh - script release otomatis: bump version (patch→auto-minor), input release notes, update CHANGELOG.md, git tag, publish ke npm, push ke remote
