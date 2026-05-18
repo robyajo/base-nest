@@ -1,5 +1,6 @@
 # Changelog
 
+## [1.1.5] - 2026-05-19\n\n- - 5878fb1 feat: add interactive CLI script for project scaffolding and PostgreSQL migration setup\n\n---\n
 ## [1.1.4] - 2026-05-19\n\n- - 74ca854 feat: add interactive CLI tool for scaffolding NestJS projects with PostgreSQL configuration\n\n---\n
 ## [1.1.3] - 2026-05-19\n\n- - eaf3daa feat: add Docker support for PostgreSQL, Redis, and app containers, and implement project upgrade functionality in CLI\n\n---\n
 ## [1.1.2] - 2026-05-18\n\n\n---\n
