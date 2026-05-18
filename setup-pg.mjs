@@ -7,7 +7,7 @@
  * installs @prisma/adapter-pg + pg, removes better-sqlite3 deps.
  */
 
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, rmSync, readdirSync, statSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { argv, exit, cwd } from 'node:process';
@@ -57,7 +57,32 @@ if (!schema.includes('provider = "sqlite"')) {
   ok('schema.prisma → provider = "postgresql"');
 }
 
-// ─── 2. Update .env ────────────────────────────────────
+// ─── 2. Update migration_lock.toml & clean migrations ──
+
+const lockPath = resolve(projectDir, 'prisma', 'migrations', 'migration_lock.toml');
+const migrationsDir = resolve(projectDir, 'prisma', 'migrations');
+
+if (existsSync(lockPath)) {
+  let lock = readFileSync(lockPath, 'utf-8');
+  if (lock.includes('provider = "sqlite"')) {
+    lock = lock.replace('provider = "sqlite"', 'provider = "postgresql"');
+    writeFileSync(lockPath, lock);
+    ok('migration_lock.toml → provider = "postgresql"');
+  }
+}
+
+// Delete old SQLite migrations (keep lock file)
+if (existsSync(migrationsDir)) {
+  for (const entry of readdirSync(migrationsDir)) {
+    const full = resolve(migrationsDir, entry);
+    if (entry !== 'migration_lock.toml' && statSync(full).isDirectory()) {
+      rmSync(full, { recursive: true, force: true });
+    }
+  }
+  ok('Old SQLite migrations removed');
+}
+
+// ─── 3. Update .env ────────────────────────────────────
 
 const envPath = resolve(projectDir, '.env');
 let envContent = '';
@@ -75,7 +100,7 @@ if (envContent.includes('DATABASE_URL=')) {
 writeFileSync(envPath, envContent);
 ok(`.env → DATABASE_URL="${pgUrl}"`);
 
-// ─── 3. Update prisma.service.ts ───────────────────────
+// ─── 4. Update prisma.service.ts ───────────────────────
 
 const servicePath = resolve(projectDir, 'src', 'prisma', 'prisma.service.ts');
 if (!existsSync(servicePath)) fail('src/prisma/prisma.service.ts not found');
@@ -109,7 +134,7 @@ export class PrismaService
 writeFileSync(servicePath, pgService);
 ok('src/prisma/prisma.service.ts → PrismaPg adapter');
 
-// ─── 4. Update seed.ts ─────────────────────────────────
+// ─── 5. Update seed.ts ─────────────────────────────────
 
 const seedPath = resolve(projectDir, 'prisma', 'seed.ts');
 if (existsSync(seedPath)) {
@@ -139,7 +164,7 @@ const prisma = new PrismaClient({ adapter });`;
   }
 }
 
-// ─── 5. Update package.json deps ───────────────────────
+// ─── 6. Update package.json deps ───────────────────────
 
 let pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
 
@@ -167,7 +192,7 @@ if (pkg.devDependencies) {
 writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
 ok('package.json → added @prisma/adapter-pg, pg');
 
-// ─── 6. Install & generate ─────────────────────────────
+// ─── 7. Install & generate ─────────────────────────────
 
 console.log('');
 console.log('\x1b[36m::\x1b[0m Installing PostgreSQL dependencies...');

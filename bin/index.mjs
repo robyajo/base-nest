@@ -6,7 +6,7 @@ import pc from 'picocolors';
 import ora from 'ora';
 import gradient from 'gradient-string';
 import { randomBytes } from 'node:crypto';
-import { readFileSync, writeFileSync, copyFileSync, existsSync, rmSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, copyFileSync, existsSync, rmSync, statSync, readdirSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { resolve, join, basename } from 'node:path';
 import { argv, exit, cwd, version as nodeVersion, hrtime } from 'node:process';
@@ -64,6 +64,24 @@ async function setupPostgres(target, dbName) {
     let s = readFileSync(schemaPath, 'utf-8');
     s = s.replace('provider = "sqlite"', 'provider = "postgresql"');
     writeFileSync(schemaPath, s);
+  }
+
+  const lockPath = join(target, 'prisma', 'migrations', 'migration_lock.toml');
+  const migrationsDir = join(target, 'prisma', 'migrations');
+  if (existsSync(lockPath)) {
+    let lock = readFileSync(lockPath, 'utf-8');
+    if (lock.includes('provider = "sqlite"')) {
+      lock = lock.replace('provider = "sqlite"', 'provider = "postgresql"');
+      writeFileSync(lockPath, lock);
+    }
+  }
+  if (existsSync(migrationsDir)) {
+    for (const entry of readdirSync(migrationsDir)) {
+      const full = join(migrationsDir, entry);
+      if (entry !== 'migration_lock.toml' && statSync(full).isDirectory()) {
+        rmSync(full, { recursive: true, force: true });
+      }
+    }
   }
 
   const envPath = join(target, '.env');
