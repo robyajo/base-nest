@@ -33,3 +33,4 @@
 - [Added] bin/index.mjs - fungsi setupPostgres() untuk konversi otomatis schema, service, seed, .env, deps
 - [Fixed] bin/index.mjs - tambah step "Generating Prisma client" (npx prisma generate) setelah npm install agar type tersedia
 - [Fixed] setup-pg.mjs + bin/index.mjs setupPostgres() - tambah update migration_lock.toml + hapus old SQLite migrations agar tidak error P3019
+- [Fixed] bin/index.mjs - perbaiki `__dirname` pakai `fileURLToPath` instead of `.pathname` (Windows crash saat CWD di drive berbeda dari cache npm, menghasilkan path `E:\C:\...`)
