@@ -1,5 +1,6 @@
 # Changelog
 
+## [1.0.7] - 2026-05-18\n\n- - d13a341 refactor: update CLI entry point to use ESM import structure in index.mjs\n\n---\n
 ## [1.0.6] - 2026-05-18\n\n- - 8315790 feat: automate .env creation with random JWT secrets and add --jwt-secret CLI flag\n\n---\n
 ## [1.0.5] - 2026-05-18\n\n- - 110c05b fix: update directory removal logic and automate dependency installation in CLI generator\n\n---\n
 ## [1.0.4] - 2026-05-18\n\n- - aa83011 chore: update executable script configuration in bin/index.mjs\n\n---\n
