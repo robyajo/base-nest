@@ -31,3 +31,4 @@
 - [Added] bin/index.mjs - flag --pg / --postgres untuk scaffolding project dengan PostgreSQL
 - [Added] bin/index.mjs - flag --setup-pg untuk switch project existing ke PostgreSQL
 - [Added] bin/index.mjs - fungsi setupPostgres() untuk konversi otomatis schema, service, seed, .env, deps
+- [Fixed] bin/index.mjs - tambah step "Generating Prisma client" (npx prisma generate) setelah npm install agar type tersedia

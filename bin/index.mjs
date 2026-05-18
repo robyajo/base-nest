@@ -412,7 +412,7 @@ console.log();
 
 console.log();
 
-const totalSteps = 4 + (flags.pg ? 1 : 0);
+const totalSteps = 5 + (flags.pg ? 1 : 0);
 initStepCounter(totalSteps);
 
 // ── Step 1: Download ──
@@ -498,7 +498,12 @@ await runStepAsync('Installing dependencies', async () => {
   execSync('npm install', { cwd: targetDir, stdio: 'pipe', timeout: 300000 });
 }, { spinner: pulseFrames });
 
-// ── Step 4: Git init ──
+// ── Step 4: Generate Prisma client ──
+await runStepAsync('Generating Prisma client', async () => {
+  execSync('npx prisma generate', { cwd: targetDir, stdio: 'pipe', timeout: 60000 });
+});
+
+// ── Step 5: Git init ──
 await runStepAsync('Initializing git repository', async () => {
   execSync('git init && git add -A && git commit -m "chore: scaffold from base-nest template"', {
     cwd: targetDir,
