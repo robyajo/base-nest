@@ -53,9 +53,9 @@ cd <nama-repository>
 npm install
 
 # 2. Copy environment variables
-cp .env .env.local
+cp .env.example .env
 
-# 3. Edit .env.local sesuai environment Anda
+# 3. Edit .env sesuai environment Anda
 #    Database, JWT secret, OAuth credentials, SMTP dll.
 #    Minimal: atur DATABASE_URL dan JWT_SECRET
 
