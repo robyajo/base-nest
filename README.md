@@ -22,37 +22,59 @@ Proyek backend NestJS modular dengan autentikasi lengkap (JWT + OAuth2), Prisma 
 - **PostgreSQL** >= 14
 - **Git**
 
-## Cara Clone & Setup
+## Menggunakan Template Ini
+
+Repositori ini adalah **GitHub Template** — Anda bisa membuat project baru langsung dari sini.
+
+### Opsi 1:Via GitHub UI
+
+1. Buka halaman repositori ini di GitHub
+2. Klik tombol **"Use this template"** → **"Create a new repository"**
+3. Isi nama repositori baru dan klik **"Create repository from template"**
+4. Clone repositori baru Anda:
 
 ```bash
-# 1. Clone repositori
-git clone <repository-url> base-nest
-cd base-nest
+git clone <repository-baru-url>
+cd <nama-repository>
+```
 
-# 2. Install dependencies
+### Opsi 2:Via gh CLI
+
+```bash
+gh repo create <nama-repository> --template <owner>/base-nest --private
+git clone <repository-baru-url>
+cd <nama-repository>
+```
+
+### Setup Setelah Clone
+
+```bash
+# 1. Install dependencies
 npm install
 
-# 3. Copy environment variables
+# 2. Copy environment variables
 cp .env .env.local
 
-# 4. Edit .env.local sesuai environment Anda
+# 3. Edit .env.local sesuai environment Anda
 #    Database, JWT secret, OAuth credentials, SMTP dll.
 #    Minimal: atur DATABASE_URL dan JWT_SECRET
 
-# 5. Setup database & jalankan migrasi
+# 4. Setup database & jalankan migrasi
 npx prisma migrate dev
 
-# 6. (Opsional) Seeder data awal
+# 5. (Opsional) Seeder data awal
 npx prisma db seed
 
-# 7. Generate Prisma Client (jika migrate dev tidak otomatis)
+# 6. Generate Prisma Client (jika migrate dev tidak otomatis)
 npx prisma generate
 
-# 8. Jalankan development server
+# 7. Jalankan development server
 npm run start:dev
 ```
 
 Akses di **http://localhost:8000**
+
+> **Catatan:** Custom template tidak akan membawa riwayat commit dari repositori ini. Setelah clone, Anda bisa menghapus folder `.github/` jika tidak diperlukan, dan mulai commit dari awal.
 
 ---
 
