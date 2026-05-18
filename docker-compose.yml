@@ -1,0 +1,66 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: base-nest-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: base_nest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: base-nest-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: base-nest-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      NODE_ENV: production
+      PORT: 8000
+      DATABASE_URL: postgresql://postgres:123@postgres:5432/base_nest?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me-in-production}
+      JWT_ACCESS_EXPIRY: ${JWT_ACCESS_EXPIRY:-15m}
+      JWT_REFRESH_EXPIRY: ${JWT_REFRESH_EXPIRY:-7d}
+      APP_URL: ${APP_URL:-http://localhost:8000}
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      CLIENT_URL: ${CLIENT_URL:-http://localhost:8000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - app_uploads:/app/uploads
+
+volumes:
+  postgres_data:
+  redis_data:
+  app_uploads:

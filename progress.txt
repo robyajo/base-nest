@@ -34,3 +34,10 @@
 - [Fixed] bin/index.mjs - tambah step "Generating Prisma client" (npx prisma generate) setelah npm install agar type tersedia
 - [Fixed] setup-pg.mjs + bin/index.mjs setupPostgres() - tambah update migration_lock.toml + hapus old SQLite migrations agar tidak error P3019
 - [Fixed] bin/index.mjs - perbaiki `__dirname` pakai `fileURLToPath` instead of `.pathname` (Windows crash saat CWD di drive berbeda dari cache npm, menghasilkan path `E:\C:\...`)
+## [2026-05-19]
+- [Rewritten] Dockerfile - multi-stage build (builder + production), alpine image, Prisma generate, tini entrypoint
+- [Created] .dockerignore - ignore node_modules, dist, .env, git, db files
+- [Created] docker-compose.yml - service postgres (16-alpine), redis (7-alpine), app (NestJS via Dockerfile) dengan healthcheck, volume, env vars
+- [Modified] README.md - tambah dokumentasi Docker, env REDIS_HOST/REDIS_PORT
+- [Added] bin/index.mjs - fitur --upgrade: download template terbaru, compare file, deteksi breaking changes (similarity <60%), merge env/deps
+- [Modified] README.md - tambah dokumentasi fitur --upgrade, tabel options

@@ -21,6 +21,8 @@ npx create-base-nestjs <project-name>
 
 Project langsung siap pakai — `npm install`, `git init`, dan `.env` dengan JWT secrets random sudah otomatis.
 
+> Jalankan via **Docker**: lihat [petunjuk lengkap](#docker) di bawah.
+
 ```bash
 npx create-base-nestjs my-project           # Default: SQLite
 npx create-base-nestjs my-project --pg      # PostgreSQL (user: postgres, password: 123)
@@ -35,6 +37,25 @@ npx create-base-nestjs --setup-pg
 # Semua dikonfigurasi otomatis: schema, adapter, .env, deps
 ```
 
+### Upgrade Project Existing ke Versi Template Terbaru
+
+```bash
+cd existing-project
+npx create-base-nestjs --upgrade
+```
+
+Proses upgrade akan:
+1. Download template versi terbaru
+2. Membandingkan struktur file project saat ini dengan template baru
+3. Menampilkan daftar **file baru** yang akan ditambahkan, **file berubah** (dengan tingkat kesamaan/kemiripan), dan **file yang tidak ada di template**
+4. **⚠ Menampilkan peringatan khusus** jika ada file yang akan ditimpa dengan perubahan besar (*breaking changes*) — misal file `.ts`, `.prisma`, atau `.json` dengan kesamaan kode di bawah 60%
+5. Menambahkan file baru, menimpa file yang berubah, menggabungkan dependensi baru
+6. Menambahkan key environment variable baru (tanpa menghapus yang sudah ada)
+7. `npm install` + `npx prisma generate` otomatis
+8. Membuat file `.base-nest-version` sebagai penanda versi template
+
+> ⚠ **Peringatan:** File dengan perubahan besar akan ditimpa. Selalu `git commit` atau backup sebelum upgrade, dan review perubahan dengan `git diff` setelah selesai.
+
 ### Options
 
 | Flag | Description |
@@ -42,6 +63,7 @@ npx create-base-nestjs --setup-pg
 | `-y, --yes` | Use default project name |
 | `--pg, --postgres` | Use PostgreSQL instead of SQLite |
 | `--setup-pg` | Switch existing project to PostgreSQL |
+| `--upgrade` | Upgrade existing project to latest template version |
 | `-j, --jwt-secret` | Generate secure JWT secret |
 | `-h, --help` | Show help |
 | `-v, --version` | Show CLI version |
@@ -147,6 +169,8 @@ src/
 | `MAIL_USER` | Optional | - | SMTP user |
 | `MAIL_PASS` | Optional | - | SMTP password |
 | `MAIL_FROM` | Optional | - | SMTP from address |
+| `REDIS_HOST` | No | `localhost` | Redis host (BullMQ / Socket.IO) |
+| `REDIS_PORT` | No | `6379` | Redis port |
 
 ---
 
@@ -190,6 +214,77 @@ node dist/main
 ```
 
 PM2 config and Nginx reverse proxy example are included (`ecosystem.config.js`, `nginx.conf`).
+
+---
+
+## Docker
+
+Project dilengkapi `Dockerfile` dan `docker-compose.yml` untuk menjalankan semua service (app, PostgreSQL, Redis) dalam container.
+
+### Prasyarat
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/) (bawaan Docker Desktop)
+
+### Menjalankan Aplikasi
+
+```bash
+# Build & start semua service
+docker compose up -d
+
+# Lihat log aplikasi
+docker compose logs -f app
+
+# Hentikan service
+docker compose down
+```
+
+### Service dalam `docker-compose.yml`
+
+| Service | Image | Port | Fungsi |
+|---|---|---|---|
+| `postgres` | `postgres:16-alpine` | `5432` | Database PostgreSQL |
+| `redis` | `redis:7-alpine` | `6379` | In-memory store (BullMQ / Socket.IO) |
+| `app` | build dari `Dockerfile` | `8000` | NestJS API |
+
+### Environment Variables untuk Docker
+
+Semua environment variable bisa di-override melalui file `.env` di root project. Contoh:
+
+```env
+JWT_SECRET=your-secret-key
+JWT_REFRESH_SECRET=your-refresh-secret
+APP_URL=http://localhost:8000
+CORS_ORIGIN=*
+```
+
+> Jika file `.env` tidak ada, nilai *default* dari `docker-compose.yml` akan dipakai.
+
+### Migrasi Database di Docker
+
+```bash
+# Jalankan migrasi di dalam container app
+docker compose exec app npx prisma migrate dev
+
+# Atau via Prisma Studio (akses di http://localhost:5555)
+docker compose exec app npx prisma studio --port 5555 --host 0.0.0.0
+```
+
+### Build Ulang Setelah Perubahan Kode
+
+Setiap kali ada perubahan kode, rebuild image app:
+
+```bash
+docker compose up -d --build app
+```
+
+### Volume Persisten
+
+| Volume | Mount | Kegunaan |
+|---|---|---|
+| `postgres_data` | `/var/lib/postgresql/data` | Data database |
+| `redis_data` | `/data` | Data Redis |
+| `app_uploads` | `/app/uploads` | File upload user |
 
 ---
 
