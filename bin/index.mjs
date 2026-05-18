@@ -5,7 +5,7 @@ import prompts from 'prompts';
 import pc from 'picocolors';
 import ora from 'ora';
 import gradient from 'gradient-string';
-import { readFileSync, writeFileSync, existsSync, rmSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, rmSync, statSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { resolve, join, basename } from 'node:path';
 import { argv, exit, cwd, version as nodeVersion, hrtime } from 'node:process';
@@ -27,12 +27,7 @@ const isDir = (p) => { try { return statSync(p).isDirectory(); } catch { return 
 
 function removeRecursive(dir) {
   if (!existsSync(dir)) return;
-  for (const entry of readdirSync(dir)) {
-    const full = join(dir, entry);
-    if (statSync(full).isDirectory()) removeRecursive(full);
-    else rmSync(full);
-  }
-  rmSync(dir);
+  rmSync(dir, { recursive: true, force: true });
 }
 
 function validateProjectName(name) {
