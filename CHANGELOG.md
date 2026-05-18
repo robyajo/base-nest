@@ -1,5 +1,6 @@
 # Changelog
 
+## [1.1.3] - 2026-05-19\n\n- - eaf3daa feat: add Docker support for PostgreSQL, Redis, and app containers, and implement project upgrade functionality in CLI\n\n---\n
 ## [1.1.2] - 2026-05-18\n\n\n---\n
 ## [1.1.1] - 2026-05-18\n\n- - eebeebd feat: add project scaffolding CLI with PostgreSQL migration support\n\n---\n
 ## [1.1.0] - 2026-05-18\n\n- - 04f0a7c fix: update migration_lock.toml and purge legacy SQLite migrations during PostgreSQL setup\n\n---\n
