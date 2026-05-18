@@ -355,14 +355,14 @@ if (flags.setupPg) {
   exit(0);
 }
 
-if (flags.upgrade) {
-  await doUpgrade();
-}
-
 // ─── Upgrade ──────────────────────────────────────────────
 
 const UPGRADE_TEMPLATE_REPO = 'robyajo/base-nest';
 const UPGRADE_MARKER_FILE = '.base-nest-version';
+
+if (flags.upgrade) {
+  await doUpgrade();
+}
 
 function getTemplateVersion() {
   try {
@@ -426,7 +426,7 @@ async function doUpgrade() {
   console.log();
 
   // Step 1: Download latest template
-  const tmpDir = mkdtempSync(join(platform() === 'win32' ? process.env.TEMP || 'C:\\Temp' : '/tmp', 'base-nest-upgrade-'));
+  const tmpDir = mkdtempSync(join(platform === 'win32' ? (process.env.TEMP || 'C:\\Temp') : '/tmp', 'base-nest-upgrade-'));
   const barSpinner = ora({ text: pc.dim('[1/4]') + ' Downloading latest template', spinner: barFrames, color: 'cyan' }).start();
 
   try {
@@ -510,13 +510,13 @@ async function doUpgrade() {
     const breaking = conflictingFiles.filter(f => f.isBreaking);
     const safe = conflictingFiles.filter(f => !f.isBreaking);
     if (breaking.length > 0) {
-      console.log(`\n  ${pc.red('⚠')} ${pc.red.bold(breaking.length)} files with ${pc.bold('BREAKING')} changes:`);
+      console.log(`\n  ${pc.red('⚠')} ${pc.red(pc.bold(breaking.length))} files with ${pc.bold('BREAKING')} changes:`);
       for (const f of breaking) {
         console.log(`    ${pc.red('⚠')} ${f.path} ${pc.dim(`(${(f.similarity * 100).toFixed(0)}% match)`)}`);
       }
     }
     if (safe.length > 0) {
-      console.log(`\n  ${pc.yellow('~')} ${pc.yellow.bold(safe.length)} files with minor changes (safe):`);
+      console.log(`\n  ${pc.yellow('~')} ${pc.yellow(pc.bold(safe.length))} files with minor changes (safe):`);
       for (const f of safe) {
         console.log(`    ${pc.yellow('~')} ${f.path}`);
       }
@@ -524,7 +524,7 @@ async function doUpgrade() {
   }
 
   if (removedFromTemplate.length > 0) {
-    console.log(`\n  ${pc.dim('-')} ${pc.dim.bold(removedFromTemplate.length)} files exist in project but not in template:`);
+    console.log(`\n  ${pc.dim('-')} ${pc.dim(pc.bold(removedFromTemplate.length))} files exist in project but not in template:`);
     for (const f of removedFromTemplate) {
       console.log(`    ${pc.dim('-')} ${f}`);
     }
