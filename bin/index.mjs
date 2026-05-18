@@ -321,6 +321,7 @@ await runStepAsync('Preparing project', async () => {
     'docs-server.js',
     'ecosystem.config.js',
     'nginx.conf',
+    'release.sh',
   ];
 
   for (const file of templateFilesToRemove) {
