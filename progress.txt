@@ -9,3 +9,4 @@
 - [Modified] .env.example - mengganti credentials asli (Google OAuth, Discord OAuth, Mailtrap) dengan placeholder aman
 - [Rewritten] README.md - ubah fokus ke npm package (CLI tool) dengan quick start, what you get, dan referensi template GitHub
 - [Created] release.sh - script release otomatis: bump version (patch→auto-minor), input release notes, update CHANGELOG.md, git tag, publish ke npm, push ke remote
+- [Fixed] bin/index.mjs - spinner definition jadi object {interval, frames} (ora v8 butuh format ini, bukan array)
