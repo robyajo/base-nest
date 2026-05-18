@@ -450,8 +450,15 @@ async function doUpgrade() {
   const conflictingFiles = [];
   const removedFromTemplate = [];
 
+  const upgradeExcludes = [
+    'bin/', '.agents/', 'AGENTS.md', 'progress.txt', 'docs-server.js',
+    'ecosystem.config.js', 'nginx.conf', 'release.sh', 'CHANGELOG.md',
+    UPGRADE_MARKER_FILE, '.env.example', 'package-lock.json',
+    'node_modules/', 'generated/', 'prisma/migrations/',
+  ];
+
   for (const f of templateFiles) {
-    if (f.startsWith('bin/') || f === UPGRADE_MARKER_FILE || f === '.env.example' || f.endsWith('.db') || f.endsWith('.db-journal') || f.includes('node_modules/') || f.startsWith('generated/')) {
+    if (upgradeExcludes.some(e => f === e || f.startsWith(e)) || f.endsWith('.db') || f.endsWith('.db-journal')) {
       continue;
     }
     if (!projectFiles.has(f)) {
