@@ -549,7 +549,7 @@ async function doUpgrade() {
   }
 
   // ─── Confirmation ──
-  const { proceed } = await prompts({
+  const { value: proceed } = await prompts({
     type: 'confirm',
     name: 'value',
     message: 'Proceed with upgrade?',
