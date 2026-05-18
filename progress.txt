@@ -1,3 +1,9 @@
 ## [2026-05-18]
 - [Created] progress.txt - membuat file logging progres pengembangan AI Agent
 - [Created] .agents/skills/logs-skill/SKILL.md - membuat standar logging aplikasi, audit trail (LoginLog), error monitoring, dan pencatatan progres AI Agent
+- [Modified] README.md - menambahkan instruksi "Menggunakan Template Ini" (GitHub UI + gh CLI)
+- [Deleted] bin/index.js - menghapus file CLI lama yang belum jadi
+- [Created] bin/index.mjs - membuat CLI tool interaktif dengan degit, prompts, step counter, timing, spinner animasi, gradient banner
+- [Modified] package.json - rename ke create-base-nestjs, tambah bin/files/engines, split deps (CLI di dependencies, NestJS di devDependencies), tambah gradient-string
+- [Moved] .env → .env.example - rename + sanitasi semua value jadi placeholder untuk template GitHub
+- [Modified] .env.example - mengganti credentials asli (Google OAuth, Discord OAuth, Mailtrap) dengan placeholder aman
