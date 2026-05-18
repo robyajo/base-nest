@@ -22,7 +22,17 @@ npx create-base-nestjs <project-name>
 Project langsung siap pakai — `npm install`, `git init`, dan `.env` dengan JWT secrets random sudah otomatis.
 
 ```bash
-npx create-base-nestjs my-project --yes   # pakai default nama "my-nest-api"
+npx create-base-nestjs my-project           # Default: SQLite
+npx create-base-nestjs my-project --pg      # PostgreSQL (user: postgres, password: 123)
+npx create-base-nestjs --yes                # Skip prompts, nama default "my-nest-api"
+```
+
+### Switch ke PostgreSQL Setelah Project Dibuat
+
+```bash
+cd my-project
+npx create-base-nestjs --setup-pg
+# Semua dikonfigurasi otomatis: schema, adapter, .env, deps
 ```
 
 ### Options
@@ -30,7 +40,9 @@ npx create-base-nestjs my-project --yes   # pakai default nama "my-nest-api"
 | Flag | Description |
 |---|---|
 | `-y, --yes` | Use default project name |
-| `-j, --jwt-secret` | Generate secure JWT secret (`JWT_SECRET` + `JWT_REFRESH_SECRET`) |
+| `--pg, --postgres` | Use PostgreSQL instead of SQLite |
+| `--setup-pg` | Switch existing project to PostgreSQL |
+| `-j, --jwt-secret` | Generate secure JWT secret |
 | `-h, --help` | Show help |
 | `-v, --version` | Show CLI version |
 
@@ -115,7 +127,7 @@ src/
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `DATABASE_URL` | Yes | - | PostgreSQL connection |
+| `DATABASE_URL` | No | `file:./dev.db` | SQLite (default) / PostgreSQL connection |
 | `JWT_SECRET` | Yes | (auto) | JWT access token secret |
 | `JWT_REFRESH_SECRET` | Yes | (auto) | JWT refresh token secret |
 | `PORT` | No | `8000` | App port |
@@ -140,6 +152,11 @@ src/
 
 ## Prisma
 
+Default menggunakan **SQLite** — langsung jalan tanpa setup database.  
+Untuk **PostgreSQL**, gunakan flag `--pg` saat scaffolding, atau jalankan `npx create-base-nestjs --setup-pg` di project yang sudah ada.
+
+Perintah Prisma:
+
 ```bash
 npx prisma migrate dev --name <change>
 npx prisma migrate deploy       # Production
@@ -155,9 +172,9 @@ Models: `User`, `Profile`, `ApiToken`, `RefreshToken`, `VerificationToken`, `Log
 
 ```bash
 npm install
-cp .env.example .env
+cp .env.example .env         # opsional, CLI sudah otomatis bikin
 npx prisma migrate dev
-npm run start:dev        # http://localhost:8000
+npm run start:dev             # http://localhost:8000
 npm run build
 npm test
 npm run lint

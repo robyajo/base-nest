@@ -16,3 +16,18 @@
 - [Added] bin/index.mjs - flag --jwt-secret / -j untuk generate JWT_SECRET + JWT_REFRESH_SECRET acak
 - [Added] bin/index.mjs - prepare step otomatis copy .env.example → .env + inject JWT secrets random
 - [Modified] README.md - tambah dokumentasi --jwt-secret, auto .env, dan cara generate secret manual
+- [Changed] prisma default dari PostgreSQL ke SQLite (file:./dev.db) agar langsung jalan tanpa setup database
+- [Modified] prisma/schema.prisma - provider postgresql → sqlite
+- [Modified] prisma/models/posts.prisma - hapus @db.Text (SQLite incompatible)
+- [Modified] prisma/models/users.prisma - scopes String[] → String (SQLite tidak support array)
+- [Rewritten] src/prisma/prisma.service.ts - ganti PrismaPg/pg → PrismaBetterSqlite3 adapter
+- [Rewritten] prisma/seed.ts - ganti PrismaPg/pg → PrismaBetterSqlite3 adapter
+- [Modified] .env.example - DATABASE_URL ke file:./dev.db
+- [Removed] @prisma/adapter-pg, pg, @types/pg dari package.json
+- [Added] @prisma/adapter-better-sqlite3, better-sqlite3, @types/better-sqlite3 ke devDependencies
+- [Modified] tsconfig.build.json - exclude prisma/, generated/ dari kompilasi
+- [Modified] .gitignore - tambah *.db, *.db-journal untuk SQLite
+- [Added] setup-pg.mjs - script standalone untuk switch project dari SQLite ke PostgreSQL
+- [Added] bin/index.mjs - flag --pg / --postgres untuk scaffolding project dengan PostgreSQL
+- [Added] bin/index.mjs - flag --setup-pg untuk switch project existing ke PostgreSQL
+- [Added] bin/index.mjs - fungsi setupPostgres() untuk konversi otomatis schema, service, seed, .env, deps

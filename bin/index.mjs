@@ -53,6 +53,92 @@ function generateSecret() {
   return randomBytes(32).toString('hex');
 }
 
+// ─── PostgreSQL setup ──────────────────────────────────
+
+const PG_USER = 'postgres';
+const PG_PASS = '123';
+
+async function setupPostgres(target, dbName) {
+  const schemaPath = join(target, 'prisma', 'schema.prisma');
+  if (existsSync(schemaPath)) {
+    let s = readFileSync(schemaPath, 'utf-8');
+    s = s.replace('provider = "sqlite"', 'provider = "postgresql"');
+    writeFileSync(schemaPath, s);
+  }
+
+  const envPath = join(target, '.env');
+  const pgUrl = `postgresql://${PG_USER}:${PG_PASS}@localhost:5432/${dbName}?schema=public`;
+  if (existsSync(envPath)) {
+    let e = readFileSync(envPath, 'utf-8');
+    e = e.replace(/^DATABASE_URL=.*$/m, `DATABASE_URL="${pgUrl}"`);
+    writeFileSync(envPath, e);
+  }
+
+  const servicePath = join(target, 'src', 'prisma', 'prisma.service.ts');
+  const pgService = `import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { PrismaClient } from '../../generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import pg from 'pg';
+
+@Injectable()
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
+  constructor() {
+    const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+    const adapter = new PrismaPg(pool);
+    super({ adapter });
+  }
+
+  async onModuleInit() {
+    await this.$connect();
+  }
+
+  async onModuleDestroy() {
+    await this.$disconnect();
+  }
+}
+`;
+  writeFileSync(servicePath, pgService);
+
+  const seedPath = join(target, 'prisma', 'seed.ts');
+  if (existsSync(seedPath)) {
+    let seedContent = readFileSync(seedPath, 'utf-8');
+    const oldBlock = `import { PrismaClient, UserRole } from "generated/prisma/client";
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+
+const url = process.env.DATABASE_URL || 'file:./dev.db';
+const adapter = new PrismaBetterSqlite3({ url });
+const prisma = new PrismaClient({ adapter });`;
+    const newBlock = `import { PrismaClient, UserRole } from "generated/prisma/client";
+import { PrismaPg } from '@prisma/adapter-pg';
+import pg from 'pg';
+
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });`;
+    if (seedContent.includes(oldBlock)) {
+      seedContent = seedContent.replace(oldBlock, newBlock);
+      writeFileSync(seedPath, seedContent);
+    }
+  }
+
+  const pkgPath2 = join(target, 'package.json');
+  if (existsSync(pkgPath2)) {
+    const p = JSON.parse(readFileSync(pkgPath2, 'utf-8'));
+    const deps = p.dependencies || {};
+    delete deps['@prisma/adapter-better-sqlite3'];
+    delete deps['better-sqlite3'];
+    delete deps['@types/better-sqlite3'];
+    deps['@prisma/adapter-pg'] = '^7.8.0';
+    deps['pg'] = '^8.20.0';
+    deps['@types/pg'] = '^8.20.0';
+    p.dependencies = deps;
+    writeFileSync(pkgPath2, JSON.stringify(p, null, 2) + '\n');
+  }
+}
+
 // ─── Custom spinner frames ─────────────────────────────
 
 const barFrames = {
@@ -194,8 +280,10 @@ const flags = {
   help: args.includes('--help') || args.includes('-h'),
   version: args.includes('--version') || args.includes('-v'),
   jwtSecret: args.includes('--jwt-secret') || args.includes('-j'),
+  pg: args.includes('--pg') || args.includes('--postgres'),
+  setupPg: args.includes('--setup-pg'),
 };
-let argProjectName = args.find(a => !a.startsWith('-'));
+let argProjectName = args.find(a => !a.startsWith('-') && a !== '--pg' && a !== '--postgres' && a !== '--setup-pg');
 
 if (flags.version) {
   console.log(pkg.version);
@@ -215,6 +303,28 @@ if (flags.jwtSecret) {
   exit(0);
 }
 
+if (flags.setupPg) {
+  const projectDir = cwd();
+  const pkgPath = join(projectDir, 'package.json');
+  if (!existsSync(pkgPath)) {
+    console.error(pc.red('✖ Not a project directory (no package.json found)'));
+    exit(1);
+  }
+  const name = basename(projectDir);
+  console.log();
+  console.log(pc.cyan(`  Setting up PostgreSQL for "${name}"...`));
+  console.log();
+  setupPostgres(projectDir, name);
+  console.log();
+  console.log(pc.cyan('  Installing PostgreSQL dependencies...'));
+  execSync('npm install', { cwd: projectDir, stdio: 'pipe', timeout: 120000 });
+  console.log(pc.green('  ✔ PostgreSQL setup complete!'));
+  console.log();
+  console.log(`  ${pc.dim('Next:')}  ${pc.cyan('npx prisma migrate dev')}`);
+  console.log();
+  exit(0);
+}
+
 if (flags.help) {
   showHelpBanner();
   console.log();
@@ -222,14 +332,18 @@ if (flags.help) {
   console.log(`    ${pc.cyan('npx create-base-nestjs')} ${pc.green('<project-name>')} ${pc.yellow('[options]')}`);
   console.log();
   console.log(`  ${pc.bold('Options:')}`);
-  console.log(`    ${pc.yellow('-y, --yes')}         Use default project name`);
-  console.log(`    ${pc.yellow('-j, --jwt-secret')}  Generate a secure JWT secret and exit`);
-  console.log(`    ${pc.yellow('-h, --help')}         Show this help`);
-  console.log(`    ${pc.yellow('-v, --version')}      Show version`);
+  console.log(`    ${pc.yellow('-y, --yes')}           Use default project name`);
+  console.log(`    ${pc.yellow('--pg, --postgres')}    Use PostgreSQL instead of SQLite`);
+  console.log(`    ${pc.yellow('--setup-pg')}          Switch existing project to PostgreSQL`);
+  console.log(`    ${pc.yellow('-j, --jwt-secret')}    Generate a secure JWT secret`);
+  console.log(`    ${pc.yellow('-h, --help')}           Show this help`);
+  console.log(`    ${pc.yellow('-v, --version')}        Show version`);
   console.log();
   console.log(`  ${pc.bold('Examples:')}`);
   console.log(`    ${pc.cyan('npx create-base-nestjs my-api')}`);
-  console.log(`    ${pc.cyan('npx create-base-nestjs --yes')}`);
+  console.log(`    ${pc.cyan('npx create-base-nestjs my-api --pg')}`);
+  console.log(`    ${pc.cyan('npx create-base-nestjs --pg my-api')}  (PostgreSQL)`);
+  console.log(`    ${pc.cyan('npx create-base-nestjs --setup-pg')}   (in existing project)`);
   console.log(`    ${pc.cyan('npx create-base-nestjs --jwt-secret')}`);
   console.log();
   exit(0);
@@ -298,7 +412,7 @@ console.log();
 
 console.log();
 
-const totalSteps = 4;
+const totalSteps = 4 + (flags.pg ? 1 : 0);
 initStepCounter(totalSteps);
 
 // ── Step 1: Download ──
@@ -371,6 +485,13 @@ await runStepAsync('Preparing project', async () => {
     writeFileSync(envPath, envContent);
   }
 });
+
+// ── Step 2b: PostgreSQL (optional) ──
+if (flags.pg) {
+  await runStepAsync('Configuring PostgreSQL', async () => {
+    setupPostgres(targetDir, basename(targetDir));
+  });
+}
 
 // ── Step 3: Install ──
 await runStepAsync('Installing dependencies', async () => {

@@ -1,7 +1,7 @@
 model Post {
     id        String   @id @default(cuid())
     title     String
-    content   String?  @db.Text
+    content   String?
     published Boolean  @default(false)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

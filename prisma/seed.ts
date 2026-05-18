@@ -1,12 +1,10 @@
 import "dotenv/config";
-import { PrismaPg } from '@prisma/adapter-pg';
-import pg from 'pg';
 import * as bcrypt from 'bcrypt';
 import { PrismaClient, UserRole } from "generated/prisma/client";
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 
-
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
+const url = process.env.DATABASE_URL || 'file:./dev.db';
+const adapter = new PrismaBetterSqlite3({ url });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
@@ -134,7 +132,7 @@ async function main() {
       userId: admin.id,
       name: 'CLI Management Token',
       token: 'api_' + Math.random().toString(36).substring(2, 15),
-      scopes: ['admin:all', 'posts:write', 'users:read'],
+      scopes: 'admin:all,posts:write,users:read',
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
     },
   });
