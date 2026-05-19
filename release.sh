@@ -168,11 +168,11 @@ echo ""
 # ─── npm publish (bns) ─────────────────────────────────
 read -rp "$(echo -e "${YELLOW}Publish ${BOLD}bns${NC}${YELLOW} v$NEXT to npm? [y/N]${NC} ")" PUBLISH_BNS
 if [[ "$PUBLISH_BNS" =~ ^[Yy]$ ]]; then
-  info "Publishing bns-cli v$NEXT to npm..."
+  info "Publishing @robyajo/bns-cli v$NEXT to npm..."
   cd packages/bns-cli
-  npm publish --access public
+  npm publish
   cd "$ROOT"
-  ok "bns-cli published to npm"
+  ok "@robyajo/bns-cli published to npm"
 fi
 
 echo ""

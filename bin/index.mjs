@@ -276,9 +276,9 @@ if (flags.help) {
   console.log(`    ${pc.yellow('-v, --version')}        Show version`);
   console.log();
   console.log(`  ${pc.bold('Utilities (run in existing project):')}`);
-  console.log(`    ${pc.cyan('npx bns-cli --setup-pg')}     Switch project to PostgreSQL`);
-  console.log(`    ${pc.cyan('npx bns-cli --upgrade')}      Upgrade project to latest template`);
-  console.log(`    ${pc.cyan('npx bns-cli --jwt-secret')}   Generate JWT secrets`);
+  console.log(`    ${pc.cyan('npx @robyajo/bns-cli --setup-pg')}     Switch project to PostgreSQL`);
+  console.log(`    ${pc.cyan('npx @robyajo/bns-cli --upgrade')}      Upgrade project to latest template`);
+  console.log(`    ${pc.cyan('npx @robyajo/bns-cli --jwt-secret')}   Generate JWT secrets`);
   console.log();
   console.log(`  ${pc.bold('Examples:')}`);
   console.log(`    ${pc.cyan('npx create-bns-api my-api')}`);

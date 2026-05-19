@@ -1,8 +1,11 @@
 {
-  "name": "bns-cli",
+  "name": "@robyajo/bns-cli",
   "version": "1.2.0",
   "description": "BNS utility CLI — setup-pg, upgrade, jwt-secret for BNS NestJS projects",
   "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "public"
+  },
   "private": false,
   "type": "module",
   "bin": {

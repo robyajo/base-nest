@@ -34,16 +34,16 @@ npx create-bns-api --yes                # Skip prompts, nama default "my-nest-ap
 Untuk operasi di project yang sudah ada, gunakan **`bns-cli`** CLI:
 
 ```bash
-npx bns-cli --setup-pg        # Switch ke PostgreSQL
-npx bns-cli --upgrade          # Upgrade ke template terbaru
-npx bns-cli --jwt-secret       # Generate JWT secrets
+npx @robyajo/bns-cli --setup-pg        # Switch ke PostgreSQL
+npx @robyajo/bns-cli --upgrade          # Upgrade ke template terbaru
+npx @robyajo/bns-cli --jwt-secret       # Generate JWT secrets
 ```
 
 ### Switch ke PostgreSQL Setelah Project Dibuat
 
 ```bash
 cd my-project
-npx bns-cli --setup-pg
+npx @robyajo/bns-cli --setup-pg
 # Semua dikonfigurasi otomatis: schema, adapter, .env, deps
 ```
 
@@ -51,7 +51,7 @@ npx bns-cli --setup-pg
 
 ```bash
 cd existing-project
-npx bns-cli --upgrade
+npx @robyajo/bns-cli --upgrade
 ```
 
 Proses upgrade akan:
@@ -89,7 +89,7 @@ Proses upgrade akan:
 
 ### Generate JWT Secret Manual
 
-Butuh secret baru tanpa buat project? Gunakan `npx bns-cli --jwt-secret`:
+Butuh secret baru tanpa buat project? Gunakan `npx @robyajo/bns-cli --jwt-secret`:
 
 ```bash
 npx bns-cli --jwt-secret
@@ -164,7 +164,7 @@ src/
 ## Environment Variables
 
 > `JWT_SECRET` dan `JWT_REFRESH_SECRET` otomatis di-generate saat scaffolding.  
-> Untuk generate manual: `npx bns-cli --jwt-secret`
+> Untuk generate manual: `npx @robyajo/bns-cli --jwt-secret`
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
@@ -196,7 +196,7 @@ src/
 ## Prisma
 
 Default menggunakan **SQLite** — langsung jalan tanpa setup database.  
-Untuk **PostgreSQL**, gunakan flag `--pg` saat scaffolding, atau jalankan `npx bns-cli --setup-pg` di project yang sudah ada.
+Untuk **PostgreSQL**, gunakan flag `--pg` saat scaffolding, atau jalankan `npx @robyajo/bns-cli --setup-pg` di project yang sudah ada.
 
 Perintah Prisma:
 
