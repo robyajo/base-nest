@@ -90,12 +90,20 @@ if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
   exit 0
 fi
 
-# ─── Update package.json ───────────────────────────────
+# ─── Update package.json (root) ────────────────────────
 node -e "
 const fs = require('fs');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 pkg.version = '$NEXT';
 fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+"
+
+# ─── Update packages/bns/package.json ──────────────────
+node -e "
+const fs = require('fs');
+const pkg = JSON.parse(fs.readFileSync('packages/bns/package.json', 'utf-8'));
+pkg.version = '$NEXT';
+fs.writeFileSync('packages/bns/package.json', JSON.stringify(pkg, null, 2) + '\n');
 "
 
 # ─── Update CHANGELOG.md ───────────────────────────────
@@ -110,7 +118,6 @@ done
 ENTRY="$HEADER\n\n$BODY\n---\n"
 
 if [ -f CHANGELOG.md ]; then
-  # Insert after first line if it starts with #
   FIRST=$(head -1 CHANGELOG.md)
   if [[ "$FIRST" == "#"* ]]; then
     TAIL=$(tail -n +2 CHANGELOG.md)
@@ -126,13 +133,14 @@ $ENTRY
 CHLOGEOF
 fi
 
-ok "package.json updated to ${BOLD}$NEXT${NC}"
+ok "Root package.json updated to ${BOLD}$NEXT${NC}"
+ok "packages/bns/package.json updated to ${BOLD}$NEXT${NC}"
 ok "CHANGELOG.md updated"
 
 echo ""
 
 # ─── Git commit & tag ──────────────────────────────────
-git add package.json CHANGELOG.md
+git add package.json packages/bns/package.json CHANGELOG.md
 git commit -m "release: v$NEXT"
 git tag -a "v$NEXT" -m "v$NEXT"
 
@@ -140,12 +148,24 @@ ok "Git commit & tag created: ${BOLD}v$NEXT${NC}"
 
 echo ""
 
-# ─── npm publish ────────────────────────────────────────
-read -rp "$(echo -e "${YELLOW}Publish to npm? [y/N]${NC} ")" PUBLISH
-if [[ "$PUBLISH" =~ ^[Yy]$ ]]; then
-  info "Publishing v$NEXT to npm..."
-  npm publish
-  ok "Published to npm"
+# ─── npm publish (create-bns-api) ───────────────────────
+read -rp "$(echo -e "${YELLOW}Publish ${BOLD}create-bns-api${NC}${YELLOW} v$NEXT to npm? [y/N]${NC} ")" PUBLISH_CREATE
+if [[ "$PUBLISH_CREATE" =~ ^[Yy]$ ]]; then
+  info "Publishing create-bns-api v$NEXT to npm..."
+  npm publish --access public
+  ok "create-bns-api published to npm"
+fi
+
+echo ""
+
+# ─── npm publish (bns) ─────────────────────────────────
+read -rp "$(echo -e "${YELLOW}Publish ${BOLD}bns${NC}${YELLOW} v$NEXT to npm? [y/N]${NC} ")" PUBLISH_BNS
+if [[ "$PUBLISH_BNS" =~ ^[Yy]$ ]]; then
+  info "Publishing bns v$NEXT to npm..."
+  cd packages/bns
+  npm publish --access public
+  cd "$ROOT"
+  ok "bns published to npm"
 fi
 
 echo ""

@@ -1,0 +1,38 @@
+{
+  "name": "bns",
+  "version": "1.1.7",
+  "description": "BNS utility CLI — setup-pg, upgrade, jwt-secret for BNS NestJS projects",
+  "license": "UNLICENSED",
+  "private": false,
+  "type": "module",
+  "bin": {
+    "bns": "bin/bns.mjs"
+  },
+  "files": [
+    "bin"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robyajo/bns.git"
+  },
+  "homepage": "https://github.com/robyajo/bns#readme",
+  "bugs": {
+    "url": "https://github.com/robyajo/bns/issues"
+  },
+  "keywords": [
+    "bns",
+    "nestjs",
+    "backend",
+    "utility"
+  ],
+  "dependencies": {
+    "degit": "^2.8.4",
+    "gradient-string": "^3.0.0",
+    "ora": "^8.1.0",
+    "picocolors": "^1.1.1",
+    "prompts": "^2.4.2"
+  }
+}
