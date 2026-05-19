@@ -1,6 +1,6 @@
 {
   "name": "create-bns-api",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Scaffold a production-ready NestJS backend (BNS) with JWT + OAuth2 auth, Prisma ORM, and more",
   "author": "",
   "license": "UNLICENSED",
@@ -19,7 +19,7 @@
     "type": "git",
     "url": "git+https://github.com/robyajo/bns.git"
   },
-    "homepage": "https://github.com/robyajo/bns#readme",
+  "homepage": "https://github.com/robyajo/bns#readme",
   "bugs": {
     "url": "https://github.com/robyajo/bns/issues"
   },

@@ -1,5 +1,6 @@
 # Changelog
 
+## [1.1.7] - 2026-05-19\n\n- - 5bcada7 chore: rename project from base-nest to bns across all documentation, configuration, and scripts\n\n---\n
 ## [1.1.6] - 2026-05-19\n\n- - a6082fe feat: add CLI tool for scaffolding NestJS projects with PostgreSQL integration\n\n---\n
 ## [1.1.5] - 2026-05-19\n\n- - 5878fb1 feat: add interactive CLI script for project scaffolding and PostgreSQL migration setup\n\n---\n
 ## [1.1.4] - 2026-05-19\n\n- - 74ca854 feat: add interactive CLI tool for scaffolding NestJS projects with PostgreSQL configuration\n\n---\n
