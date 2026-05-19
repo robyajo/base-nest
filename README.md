@@ -92,7 +92,7 @@ Proses upgrade akan:
 Butuh secret baru tanpa buat project? Gunakan `npx @robyajo/bns-cli --jwt-secret`:
 
 ```bash
-npx bns-cli --jwt-secret
+npx @robyajo/bns-cli --jwt-secret
 
 # Output:
 #   JWT_SECRET=d6c341fde02724dc2ce6da0eaad099bbb8a2544538726b9b2f99681b7f6b8404
