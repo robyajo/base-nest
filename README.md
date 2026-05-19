@@ -31,19 +31,19 @@ npx create-bns-api --yes                # Skip prompts, nama default "my-nest-ap
 
 ### BNS Utility CLI
 
-Untuk operasi di project yang sudah ada, gunakan **`bns`** CLI:
+Untuk operasi di project yang sudah ada, gunakan **`bns-cli`** CLI:
 
 ```bash
-npx bns --setup-pg        # Switch ke PostgreSQL
-npx bns --upgrade          # Upgrade ke template terbaru
-npx bns --jwt-secret       # Generate JWT secrets
+npx bns-cli --setup-pg        # Switch ke PostgreSQL
+npx bns-cli --upgrade          # Upgrade ke template terbaru
+npx bns-cli --jwt-secret       # Generate JWT secrets
 ```
 
 ### Switch ke PostgreSQL Setelah Project Dibuat
 
 ```bash
 cd my-project
-npx bns --setup-pg
+npx bns-cli --setup-pg
 # Semua dikonfigurasi otomatis: schema, adapter, .env, deps
 ```
 
@@ -51,7 +51,7 @@ npx bns --setup-pg
 
 ```bash
 cd existing-project
-npx bns --upgrade
+npx bns-cli --upgrade
 ```
 
 Proses upgrade akan:
@@ -77,7 +77,7 @@ Proses upgrade akan:
 | `-h, --help` | Show help |
 | `-v, --version` | Show version |
 
-#### `bns` (utilities)
+#### `bns-cli` (utilities)
 
 | Flag | Description |
 |---|---|
@@ -89,10 +89,10 @@ Proses upgrade akan:
 
 ### Generate JWT Secret Manual
 
-Butuh secret baru tanpa buat project? Gunakan `npx bns --jwt-secret`:
+Butuh secret baru tanpa buat project? Gunakan `npx bns-cli --jwt-secret`:
 
 ```bash
-npx bns --jwt-secret
+npx bns-cli --jwt-secret
 
 # Output:
 #   JWT_SECRET=d6c341fde02724dc2ce6da0eaad099bbb8a2544538726b9b2f99681b7f6b8404
@@ -164,7 +164,7 @@ src/
 ## Environment Variables
 
 > `JWT_SECRET` dan `JWT_REFRESH_SECRET` otomatis di-generate saat scaffolding.  
-> Untuk generate manual: `npx bns --jwt-secret`
+> Untuk generate manual: `npx bns-cli --jwt-secret`
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
@@ -196,7 +196,7 @@ src/
 ## Prisma
 
 Default menggunakan **SQLite** — langsung jalan tanpa setup database.  
-Untuk **PostgreSQL**, gunakan flag `--pg` saat scaffolding, atau jalankan `npx bns --setup-pg` di project yang sudah ada.
+Untuk **PostgreSQL**, gunakan flag `--pg` saat scaffolding, atau jalankan `npx bns-cli --setup-pg` di project yang sudah ada.
 
 Perintah Prisma:
 

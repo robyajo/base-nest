@@ -103,12 +103,12 @@ pkg.version = '$NEXT';
 fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
 "
 
-# ─── Update packages/bns/package.json ──────────────────
+# ─── Update packages/bns-cli/package.json ──────────────
 node -e "
 const fs = require('fs');
-const pkg = JSON.parse(fs.readFileSync('packages/bns/package.json', 'utf-8'));
+const pkg = JSON.parse(fs.readFileSync('packages/bns-cli/package.json', 'utf-8'));
 pkg.version = '$NEXT';
-fs.writeFileSync('packages/bns/package.json', JSON.stringify(pkg, null, 2) + '\n');
+fs.writeFileSync('packages/bns-cli/package.json', JSON.stringify(pkg, null, 2) + '\n');
 "
 
 # ─── Update CHANGELOG.md ───────────────────────────────
@@ -141,13 +141,13 @@ CHLOGEOF
 fi
 
 ok "Root package.json updated to ${BOLD}$NEXT${NC}"
-ok "packages/bns/package.json updated to ${BOLD}$NEXT${NC}"
+ok "packages/bns-cli/package.json updated to ${BOLD}$NEXT${NC}"
 ok "CHANGELOG.md updated"
 
 echo ""
 
 # ─── Git commit & tag ──────────────────────────────────
-git add package.json packages/bns/package.json CHANGELOG.md
+git add package.json packages/bns-cli/package.json CHANGELOG.md
 git commit -m "release: v$NEXT"
 git tag -a "v$NEXT" -m "v$NEXT"
 
@@ -168,11 +168,11 @@ echo ""
 # ─── npm publish (bns) ─────────────────────────────────
 read -rp "$(echo -e "${YELLOW}Publish ${BOLD}bns${NC}${YELLOW} v$NEXT to npm? [y/N]${NC} ")" PUBLISH_BNS
 if [[ "$PUBLISH_BNS" =~ ^[Yy]$ ]]; then
-  info "Publishing bns v$NEXT to npm..."
-  cd packages/bns
+  info "Publishing bns-cli v$NEXT to npm..."
+  cd packages/bns-cli
   npm publish --access public
   cd "$ROOT"
-  ok "bns published to npm"
+  ok "bns-cli published to npm"
 fi
 
 echo ""

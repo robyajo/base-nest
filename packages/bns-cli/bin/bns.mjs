@@ -642,7 +642,7 @@ if (flags.help) {
   showHelpBanner();
   console.log();
   console.log(`  ${pc.bold('Usage:')}`);
-  console.log(`    ${pc.cyan('npx bns')} ${pc.yellow('[command]')}`);
+  console.log(`    ${pc.cyan('npx bns-cli')} ${pc.yellow('[command]')}`);
   console.log();
   console.log(`  ${pc.bold('Commands:')}`);
   console.log(`    ${pc.yellow('--setup-pg')}          Switch existing project to PostgreSQL`);
@@ -652,9 +652,9 @@ if (flags.help) {
   console.log(`    ${pc.yellow('-v, --version')}        Show version`);
   console.log();
   console.log(`  ${pc.bold('Examples:')}`);
-  console.log(`    ${pc.cyan('npx bns --setup-pg')}    (in existing project)`);
-  console.log(`    ${pc.cyan('npx bns --upgrade')}     (in existing project)`);
-  console.log(`    ${pc.cyan('npx bns --jwt-secret')}`);
+  console.log(`    ${pc.cyan('npx bns-cli --setup-pg')}    (in existing project)`);
+  console.log(`    ${pc.cyan('npx bns-cli --upgrade')}     (in existing project)`);
+  console.log(`    ${pc.cyan('npx bns-cli --jwt-secret')}`);
   console.log();
   exit(0);
 }
@@ -663,5 +663,5 @@ if (flags.help) {
 
 showBanner();
 console.log();
-console.log(`  ${pc.yellow('Usage:')} ${pc.cyan('npx bns --help')} ${pc.dim('to see available commands')}`);
+console.log(`  ${pc.yellow('Usage:')} ${pc.cyan('npx bns-cli --help')} ${pc.dim('to see available commands')}`);
 console.log();
