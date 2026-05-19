@@ -81,6 +81,11 @@ if [ ${#NOTES[@]} -eq 0 ]; then
   ok "Generated ${#NOTES[@]} entries from git log"
 fi
 
+# Fallback jika NOTES masih kosong
+if [ ${#NOTES[@]} -eq 0 ]; then
+  NOTES=("chore: release v$NEXT")
+fi
+
 echo ""
 
 # ─── Confirm ──────────────────────────────────────────
@@ -111,9 +116,11 @@ DATE=$(date +%Y-%m-%d)
 HEADER="## [$NEXT] - $DATE"
 
 BODY=""
-for NOTE in "${NOTES[@]}"; do
-  BODY="$BODY- $NOTE\n"
-done
+if [ ${#NOTES[@]} -gt 0 ]; then
+  for NOTE in "${NOTES[@]}"; do
+    BODY="$BODY- $NOTE\n"
+  done
+fi
 
 ENTRY="$HEADER\n\n$BODY\n---\n"
 
