@@ -1,5 +1,6 @@
 # Changelog
 
+## [1.2.1] - 2026-05-19\n\n- - c398889 docs: update CLI package name in README instructions\n- - efa615e chore: rename bns-cli to @robyajo/bns-cli and update usage documentation\n\n---\n
 ## [1.2.0] - 2026-05-19\n\n- - 863cdbe feat: introduce standalone bns-cli package and remove legacy bns package bin files\n\n---\n
 ## [1.1.9] - 2026-05-19\n\n- - 7af03ef chore: update versioning logic in release script\n\n---\n
 ## [1.1.8] - 2026-05-19\n\n- - 21e9580 feat: introduce bns CLI tool for project maintenance and PostgreSQL migration support\n\n---\n
