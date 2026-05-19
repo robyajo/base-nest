@@ -264,7 +264,7 @@ function skipStep(label) {
 
 const BANNER_RAW =
   '╔═══════════════════════════════════════╗\n' +
-  '║       Create Base NestJS App          ║\n' +
+  '║          Create BNS API               ║\n' +
   '╚═══════════════════════════════════════╝';
 
 function showBanner() {
@@ -277,7 +277,7 @@ function showBanner() {
 function showHelpBanner() {
   console.log(gradient('cyan', 'magenta')(
     '╔═══════════════════════════════════════╗\n' +
-    '║       Create Base NestJS App          ║\n' +
+    '║          Create BNS API               ║\n' +
     '╚═══════════════════════════════════════╝'
   ));
   console.log(pc.dim(`                        v${pkg.version}`));
@@ -357,8 +357,8 @@ if (flags.setupPg) {
 
 // ─── Upgrade ──────────────────────────────────────────────
 
-const UPGRADE_TEMPLATE_REPO = 'robyajo/base-nest';
-const UPGRADE_MARKER_FILE = '.base-nest-version';
+const UPGRADE_TEMPLATE_REPO = 'robyajo/bns';
+const UPGRADE_MARKER_FILE = '.bns-version';
 
 if (flags.upgrade) {
   await doUpgrade();
@@ -426,7 +426,7 @@ async function doUpgrade() {
   console.log();
 
   // Step 1: Download latest template
-  const tmpDir = mkdtempSync(join(platform === 'win32' ? (process.env.TEMP || 'C:\\Temp') : '/tmp', 'base-nest-upgrade-'));
+  const tmpDir = mkdtempSync(join(platform === 'win32' ? (process.env.TEMP || 'C:\\Temp') : '/tmp', 'bns-upgrade-'));
   const barSpinner = ora({ text: pc.dim('[1/4]') + ' Downloading latest template', spinner: barFrames, color: 'cyan' }).start();
 
   try {
@@ -709,7 +709,7 @@ if (flags.help) {
   showHelpBanner();
   console.log();
   console.log(`  ${pc.bold('Usage:')}`);
-  console.log(`    ${pc.cyan('npx create-base-nestjs')} ${pc.green('<project-name>')} ${pc.yellow('[options]')}`);
+  console.log(`    ${pc.cyan('npx create-bns-api')} ${pc.green('<project-name>')} ${pc.yellow('[options]')}`);
   console.log();
   console.log(`  ${pc.bold('Options:')}`);
   console.log(`    ${pc.yellow('-y, --yes')}           Use default project name`);
@@ -721,12 +721,12 @@ if (flags.help) {
   console.log(`    ${pc.yellow('-v, --version')}        Show version`);
   console.log();
   console.log(`  ${pc.bold('Examples:')}`);
-  console.log(`    ${pc.cyan('npx create-base-nestjs my-api')}`);
-  console.log(`    ${pc.cyan('npx create-base-nestjs my-api --pg')}`);
-  console.log(`    ${pc.cyan('npx create-base-nestjs --pg my-api')}  (PostgreSQL)`);
-  console.log(`    ${pc.cyan('npx create-base-nestjs --setup-pg')}   (in existing project)`);
-  console.log(`    ${pc.cyan('npx create-base-nestjs --upgrade')}    (in existing project)`);
-  console.log(`    ${pc.cyan('npx create-base-nestjs --jwt-secret')}`);
+  console.log(`    ${pc.cyan('npx create-bns-api my-api')}`);
+  console.log(`    ${pc.cyan('npx create-bns-api my-api --pg')}`);
+  console.log(`    ${pc.cyan('npx create-bns-api --pg my-api')}  (PostgreSQL)`);
+  console.log(`    ${pc.cyan('npx create-bns-api --setup-pg')}   (in existing project)`);
+  console.log(`    ${pc.cyan('npx create-bns-api --upgrade')}    (in existing project)`);
+  console.log(`    ${pc.cyan('npx create-bns-api --jwt-secret')}`);
   console.log();
   exit(0);
 }
@@ -799,7 +799,7 @@ initStepCounter(totalSteps);
 
 // ── Step 1: Download ──
 await runStepAsync('Downloading template', async () => {
-  const emitter = degit('robyajo/base-nest', {
+  const emitter = degit('robyajo/bns', {
     cache: false,
     force: true,
     verbose: false,
@@ -887,7 +887,7 @@ await runStepAsync('Generating Prisma client', async () => {
 
 // ── Step 5: Git init ──
 await runStepAsync('Initializing git repository', async () => {
-  execSync('git init && git add -A && git commit -m "chore: scaffold from base-nest template"', {
+  execSync('git init && git add -A && git commit -m "chore: scaffold from bns template"', {
     cwd: targetDir,
     stdio: 'pipe',
     timeout: 30000,
@@ -907,7 +907,7 @@ showBox([
   `  ${pc.cyan('npx prisma migrate dev')}`,
   `  ${pc.cyan('npm run start:dev')}`,
   '',
-  pc.dim('  📖  ') + pc.dim('github.com/robyajo/base-nest'),
+  pc.dim('  📖  ') + pc.dim('github.com/robyajo/bns'),
 ], { color: 'cyan' });
 
 console.log();

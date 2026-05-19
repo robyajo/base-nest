@@ -1,9 +1,9 @@
-# create-base-nestjs
+# create-bns-api
 
 Scaffold a production-ready **NestJS 11** backend with authentication (JWT + OAuth2), Prisma ORM, and more.
 
 ```bash
-npx create-base-nestjs my-project
+npx create-bns-api my-project
 cd my-project
 npx prisma migrate dev
 npm run start:dev
@@ -16,7 +16,7 @@ npm run start:dev
 ## Quick Start
 
 ```bash
-npx create-base-nestjs <project-name>
+npx create-bns-api <project-name>
 ```
 
 Project langsung siap pakai — `npm install`, `git init`, dan `.env` dengan JWT secrets random sudah otomatis.
@@ -24,16 +24,16 @@ Project langsung siap pakai — `npm install`, `git init`, dan `.env` dengan JWT
 > Jalankan via **Docker**: lihat [petunjuk lengkap](#docker) di bawah.
 
 ```bash
-npx create-base-nestjs my-project           # Default: SQLite
-npx create-base-nestjs my-project --pg      # PostgreSQL (user: postgres, password: 123)
-npx create-base-nestjs --yes                # Skip prompts, nama default "my-nest-api"
+npx create-bns-api my-project           # Default: SQLite
+npx create-bns-api my-project --pg      # PostgreSQL (user: postgres, password: 123)
+npx create-bns-api --yes                # Skip prompts, nama default "my-nest-api"
 ```
 
 ### Switch ke PostgreSQL Setelah Project Dibuat
 
 ```bash
 cd my-project
-npx create-base-nestjs --setup-pg
+npx create-bns-api --setup-pg
 # Semua dikonfigurasi otomatis: schema, adapter, .env, deps
 ```
 
@@ -41,7 +41,7 @@ npx create-base-nestjs --setup-pg
 
 ```bash
 cd existing-project
-npx create-base-nestjs --upgrade
+npx create-bns-api --upgrade
 ```
 
 Proses upgrade akan:
@@ -52,7 +52,7 @@ Proses upgrade akan:
 5. Menambahkan file baru, menimpa file yang berubah, menggabungkan dependensi baru
 6. Menambahkan key environment variable baru (tanpa menghapus yang sudah ada)
 7. `npm install` + `npx prisma generate` otomatis
-8. Membuat file `.base-nest-version` sebagai penanda versi template
+8. Membuat file `.bns-version` sebagai penanda versi template
 
 > ⚠ **Peringatan:** File dengan perubahan besar akan ditimpa. Selalu `git commit` atau backup sebelum upgrade, dan review perubahan dengan `git diff` setelah selesai.
 
@@ -73,7 +73,7 @@ Proses upgrade akan:
 Butuh secret baru tanpa buat project? Gunakan `--jwt-secret`:
 
 ```bash
-npx create-base-nestjs --jwt-secret
+npx create-bns-api --jwt-secret
 
 # Output:
 #   JWT_SECRET=d6c341fde02724dc2ce6da0eaad099bbb8a2544538726b9b2f99681b7f6b8404
@@ -145,7 +145,7 @@ src/
 ## Environment Variables
 
 > `JWT_SECRET` dan `JWT_REFRESH_SECRET` otomatis di-generate saat scaffolding.  
-> Untuk generate manual: `npx create-base-nestjs --jwt-secret`
+> Untuk generate manual: `npx create-bns-api --jwt-secret`
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
@@ -177,7 +177,7 @@ src/
 ## Prisma
 
 Default menggunakan **SQLite** — langsung jalan tanpa setup database.  
-Untuk **PostgreSQL**, gunakan flag `--pg` saat scaffolding, atau jalankan `npx create-base-nestjs --setup-pg` di project yang sudah ada.
+Untuk **PostgreSQL**, gunakan flag `--pg` saat scaffolding, atau jalankan `npx create-bns-api --setup-pg` di project yang sudah ada.
 
 Perintah Prisma:
 
@@ -290,4 +290,4 @@ docker compose up -d --build app
 
 ## GitHub Template
 
-This repo is also a [GitHub template](https://github.com/robyajo/base-nest/generate) — click **"Use this template"** to create a new repo without the CLI.
+This repo is also a [GitHub template](https://github.com/robyajo/bns/generate) — click **"Use this template"** to create a new repo without the CLI.

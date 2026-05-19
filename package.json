@@ -1,13 +1,13 @@
 {
-  "name": "create-base-nestjs",
+  "name": "create-bns-api",
   "version": "1.1.6",
-  "description": "Scaffold a production-ready NestJS backend with JWT + OAuth2 auth, Prisma ORM, and more",
+  "description": "Scaffold a production-ready NestJS backend (BNS) with JWT + OAuth2 auth, Prisma ORM, and more",
   "author": "",
   "license": "UNLICENSED",
   "private": false,
   "type": "commonjs",
   "bin": {
-    "create-base-nestjs": "bin/index.mjs"
+    "create-bns-api": "bin/index.mjs"
   },
   "files": [
     "bin"
@@ -17,11 +17,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/robyajo/base-nest.git"
+    "url": "git+https://github.com/robyajo/bns.git"
   },
-  "homepage": "https://github.com/robyajo/base-nest#readme",
+    "homepage": "https://github.com/robyajo/bns#readme",
   "bugs": {
-    "url": "https://github.com/robyajo/base-nest/issues"
+    "url": "https://github.com/robyajo/bns/issues"
   },
   "keywords": [
     "nestjs",

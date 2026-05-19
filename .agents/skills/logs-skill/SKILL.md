@@ -1,15 +1,15 @@
 ---
 name: logs-skill
-description: Standar pengelolaan logging aplikasi, audit trail (LoginLog), error monitoring (NestJS Logger & PM2), dan pencatatan riwayat progres AI agent di ekosistem base-nest.
+description: Standar pengelolaan logging aplikasi, audit trail (LoginLog), error monitoring (NestJS Logger & PM2), dan pencatatan riwayat progres AI agent di ekosistem bns.
 license: MIT
 compatibility: opencode
 metadata:
   audience: backend-engineers, ai-agents
 ---
 
-# 📋 Logs & Monitoring Skill (`base-nest`)
+# 📋 Logs & Monitoring Skill (`bns`)
 
-Skill ini mendefinisikan standar, pola, dan aturan wajib dalam pengelolaan log aplikasi, pelacakan error, audit keamanan, serta **pencatatan riwayat progres pengembangan oleh AI Agent** dalam ekosistem **`base-nest`** (NestJS 11 + Prisma v7 + PostgreSQL).
+Skill ini mendefinisikan standar, pola, dan aturan wajib dalam pengelolaan log aplikasi, pelacakan error, audit keamanan, serta **pencatatan riwayat progres pengembangan oleh AI Agent** dalam ekosistem **`bns`** (NestJS 11 + Prisma v7 + PostgreSQL).
 
 ---
 
@@ -185,7 +185,7 @@ Pada lingkungan production, NestJS dijalankan melalui manajer proses **PM2** ses
 - Untuk memantau log secara langsung (*real-time*):
   ```bash
   # Melihat seluruh log aplikasi
-  pm2 logs base-nest --lines 100
+  pm2 logs bns --lines 100
 
   # Melihat dashboard pemantauan real-time
   pm2 monit

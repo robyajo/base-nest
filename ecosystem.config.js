@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'base-nest',
+      name: 'bns',
       script: 'dist/main.js',
       instances: 1,
       exec_mode: 'fork',

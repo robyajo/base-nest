@@ -1,4 +1,4 @@
-# base-nest — Agent instructions
+# bns — Agent instructions
 
 ## Stack
 - **NestJS 11** (Express platform), single package (not monorepo)
