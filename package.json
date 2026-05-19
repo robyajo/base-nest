@@ -1,6 +1,6 @@
 {
   "name": "create-bns-api",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "Scaffold a production-ready NestJS backend (BNS) with JWT + OAuth2 auth, Prisma ORM, and more",
   "author": "",
   "license": "UNLICENSED",
