@@ -1,5 +1,6 @@
 # Changelog
 
+## [1.1.9] - 2026-05-19\n\n- - 7af03ef chore: update versioning logic in release script\n\n---\n
 ## [1.1.8] - 2026-05-19\n\n- - 21e9580 feat: introduce bns CLI tool for project maintenance and PostgreSQL migration support\n\n---\n
 ## [1.1.7] - 2026-05-19\n\n- - 5bcada7 chore: rename project from base-nest to bns across all documentation, configuration, and scripts\n\n---\n
 ## [1.1.6] - 2026-05-19\n\n- - a6082fe feat: add CLI tool for scaffolding NestJS projects with PostgreSQL integration\n\n---\n
