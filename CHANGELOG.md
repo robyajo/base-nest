@@ -1,5 +1,6 @@
 # Changelog
 
+## [1.2.5] - 2026-05-25\n\n- - 7f7466a feat: add module generator CLI and update app configuration\n\n---\n
 ## [1.2.4] - 2026-05-25\n\n- - 5715369 feat: initialize Prisma ORM with SQLite, core database schema, and service provider\n\n---\n
 ## [1.2.3] - 2026-05-25\n\n- chore: release v1.2.3\n\n---\n
 ## [1.2.2] - 2026-05-25\n\n- - 569c871 feat: implement PrismaService with PostgreSQL adapter and lifecycle hooks\n- - 4b63e8b feat: initialize core NestJS application architecture with Prisma ORM and logging support\n\n---\n
