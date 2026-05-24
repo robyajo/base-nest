@@ -34,6 +34,8 @@ npx create-bns-api --yes                # Skip prompts, nama default "my-nest-ap
 Untuk operasi di project yang sudah ada, gunakan **`bns-cli`** CLI:
 
 ```bash
+npx @robyajo/bns-cli make <name>        # Generate module baru (controller + service + module)
+npx @robyajo/bns-cli g <name>           # Alias untuk make
 npx @robyajo/bns-cli --setup-pg        # Switch ke PostgreSQL
 npx @robyajo/bns-cli --upgrade          # Upgrade ke template terbaru
 npx @robyajo/bns-cli --jwt-secret       # Generate JWT secrets
@@ -79,13 +81,33 @@ Proses upgrade akan:
 
 #### `bns-cli` (utilities)
 
-| Flag | Description |
+| Command / Flag | Description |
 |---|---|
+| `make <name>` | Generate new module (controller + service + module) in `src/modules/` |
+| `g <name>` | Alias for `make` |
 | `--setup-pg` | Switch existing project to PostgreSQL |
 | `--upgrade` | Upgrade existing project to latest template version |
 | `-j, --jwt-secret` | Generate secure JWT secret |
 | `-h, --help` | Show help |
 | `-v, --version` | Show version |
+
+Module generator (`make` / `g`) akan membuat 3 file dan otomatis mendaftarkannya ke `AppModule`:
+
+```bash
+npx @robyajo/bns-cli make user
+
+# Output:
+#   create  src/modules/user/user.module.ts
+#   create  src/modules/user/user.controller.ts
+#   create  src/modules/user/user.service.ts
+#   (app.module.ts otomatis diupdate)
+```
+
+Juga bisa via NPM script:
+
+```bash
+npm run make -- user
+```
 
 ### Generate JWT Secret Manual
 

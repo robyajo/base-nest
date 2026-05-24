@@ -41,3 +41,9 @@
 - [Modified] README.md - tambah dokumentasi Docker, env REDIS_HOST/REDIS_PORT
 - [Added] bin/index.mjs - fitur --upgrade: download template terbaru, compare file, deteksi breaking changes (similarity <60%), merge env/deps
 - [Modified] README.md - tambah dokumentasi fitur --upgrade, tabel options
+## [2026-05-25]
+- [Created] packages/bns-cli/lib/generate-module.mjs - membuat generator module (controller + service + module) untuk scaffolding modular NestJS
+- [Added] packages/bns-cli/bin/bns.mjs - subcommand `make` / `g` untuk generate module baru dari CLI
+- [Added] package.json - script `make` untuk akses lokal via `npm run make -- <name>`
+- [Fixed] packages/bns-cli/lib/generate-module.mjs - perbaiki updateAppModule agar tidak double-comma di imports array
+- [Updated] README.md - tambah dokumentasi `make` / `g` command untuk module generator di BNS Utility CLI

@@ -11,6 +11,7 @@ import { execSync } from 'node:child_process';
 import { resolve, join, basename, dirname } from 'node:path';
 import { argv, exit, cwd, version as nodeVersion, hrtime, platform } from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { validateModuleName, generateModule } from '../lib/generate-module.mjs';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const pkg = JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf-8'));
@@ -636,6 +637,45 @@ async function doUpgrade() {
   exit(0);
 }
 
+// ─── Make (module generator) ──────────────────────────
+
+const isMake = args[0] === 'make' || args[0] === 'g';
+const moduleName = isMake ? args[1] : null;
+
+if (isMake) {
+  showBanner();
+
+  const error = validateModuleName(moduleName);
+  if (error) {
+    console.log();
+    console.log(`  ${pc.red('✖')} ${error}`);
+    console.log();
+    console.log(`  ${pc.dim('Usage:')} ${pc.cyan('npx @robyajo/bns-cli make <module-name>')}`);
+    console.log(`  ${pc.dim('       ')} ${pc.cyan('npx @robyajo/bns-cli g <module-name>')}`);
+    console.log();
+    exit(1);
+  }
+
+  const result = generateModule(moduleName);
+  if (!result.ok) {
+    console.log();
+    console.log(`  ${pc.red('✖')} ${result.error}`);
+    console.log();
+    exit(1);
+  }
+
+  console.log();
+  console.log(`  ${pc.green('✔')} Module "${pc.bold(moduleName)}" created successfully`);
+  console.log();
+  for (const file of result.files) {
+    console.log(`    ${pc.cyan('create')}  ${file}`);
+  }
+  console.log();
+  console.log(`  ${pc.dim('Next:')} Register routes in ${pc.cyan('src/modules/' + moduleName + '/' + moduleName + '.controller.ts')}`);
+  console.log();
+  exit(0);
+}
+
 // ─── Help ──────────────────────────────────────────────
 
 if (flags.help) {
@@ -645,6 +685,8 @@ if (flags.help) {
   console.log(`    ${pc.cyan('npx @robyajo/bns-cli')} ${pc.yellow('[command]')}`);
   console.log();
   console.log(`  ${pc.bold('Commands:')}`);
+  console.log(`    ${pc.yellow('make <name>')}         Generate a new module (controller + service + module)`);
+  console.log(`    ${pc.yellow('g <name>')}            Alias for make`);
   console.log(`    ${pc.yellow('--setup-pg')}          Switch existing project to PostgreSQL`);
   console.log(`    ${pc.yellow('--upgrade')}           Upgrade existing project to latest template`);
   console.log(`    ${pc.yellow('-j, --jwt-secret')}    Generate a secure JWT secret`);
@@ -652,6 +694,8 @@ if (flags.help) {
   console.log(`    ${pc.yellow('-v, --version')}        Show version`);
   console.log();
   console.log(`  ${pc.bold('Examples:')}`);
+  console.log(`    ${pc.cyan('npx @robyajo/bns-cli make user')}      Generate user module`);
+  console.log(`    ${pc.cyan('npx @robyajo/bns-cli g order')}        Generate order module (alias)`);
   console.log(`    ${pc.cyan('npx @robyajo/bns-cli --setup-pg')}    (in existing project)`);
   console.log(`    ${pc.cyan('npx @robyajo/bns-cli --upgrade')}     (in existing project)`);
   console.log(`    ${pc.cyan('npx @robyajo/bns-cli --jwt-secret')}`);
@@ -664,4 +708,6 @@ if (flags.help) {
 showBanner();
 console.log();
 console.log(`  ${pc.yellow('Usage:')} ${pc.cyan('npx @robyajo/bns-cli --help')} ${pc.dim('to see available commands')}`);
+console.log(`  ${pc.dim('Generate modules:')} ${pc.cyan('npx @robyajo/bns-cli make <module-name>')}`);
+console.log(`  ${pc.dim('Short alias:')}     ${pc.cyan('npx @robyajo/bns-cli g <module-name>')}`);
 console.log();
