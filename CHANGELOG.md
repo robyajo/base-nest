@@ -1,5 +1,6 @@
 # Changelog
 
+## [1.2.4] - 2026-05-25\n\n- - 5715369 feat: initialize Prisma ORM with SQLite, core database schema, and service provider\n\n---\n
 ## [1.2.3] - 2026-05-25\n\n- chore: release v1.2.3\n\n---\n
 ## [1.2.2] - 2026-05-25\n\n- - 569c871 feat: implement PrismaService with PostgreSQL adapter and lifecycle hooks\n- - 4b63e8b feat: initialize core NestJS application architecture with Prisma ORM and logging support\n\n---\n
 ## [1.2.1] - 2026-05-19\n\n- - c398889 docs: update CLI package name in README instructions\n- - efa615e chore: rename bns-cli to @robyajo/bns-cli and update usage documentation\n\n---\n
