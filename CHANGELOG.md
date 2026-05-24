@@ -1,5 +1,6 @@
 # Changelog
 
+## [1.2.7] - 2026-05-25\n\n- - 5b4f233 feat: initialize BNS utility CLI with PostgreSQL migration and module generation support\n\n---\n
 ## [1.2.6] - 2026-05-25\n\n- - 5d043d2 feat: initialize bns-cli package configuration and binary execution scripts\n\n---\n
 ## [1.2.5] - 2026-05-25\n\n- - 7f7466a feat: add module generator CLI and update app configuration\n\n---\n
 ## [1.2.4] - 2026-05-25\n\n- - 5715369 feat: initialize Prisma ORM with SQLite, core database schema, and service provider\n\n---\n
