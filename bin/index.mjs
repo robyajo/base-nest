@@ -405,6 +405,7 @@ await runStepAsync('Preparing project', async () => {
 
   delete projectPkg.bin;
   delete projectPkg.files;
+  delete projectPkg.scripts?.make;
 
   const ordered = {};
   for (const key of Object.keys(projectPkg).sort()) {

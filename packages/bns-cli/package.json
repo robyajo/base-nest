@@ -12,7 +12,8 @@
     "bns-cli": "bin/bns.mjs"
   },
   "files": [
-    "bin"
+    "bin",
+    "lib"
   ],
   "engines": {
     "node": ">=18"

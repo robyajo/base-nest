@@ -47,3 +47,5 @@
 - [Added] package.json - script `make` untuk akses lokal via `npm run make -- <name>`
 - [Fixed] packages/bns-cli/lib/generate-module.mjs - perbaiki updateAppModule agar tidak double-comma di imports array
 - [Updated] README.md - tambah dokumentasi `make` / `g` command untuk module generator di BNS Utility CLI
+- [Fixed] packages/bns-cli/package.json - tambah `lib` ke `files` agar `lib/generate-module.mjs` termasuk dalam publikasi npm
+- [Fixed] bin/index.mjs - hapus script `make` dari package.json saat scaffolding agar tidak error di project hasil generate
