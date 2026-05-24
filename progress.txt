@@ -49,3 +49,6 @@
 - [Updated] README.md - tambah dokumentasi `make` / `g` command untuk module generator di BNS Utility CLI
 - [Fixed] packages/bns-cli/package.json - tambah `lib` ke `files` agar `lib/generate-module.mjs` termasuk dalam publikasi npm
 - [Fixed] bin/index.mjs - hapus script `make` dari package.json saat scaffolding agar tidak error di project hasil generate
+- [Added] packages/bns-cli/lib/generate-module.mjs - dukungan flag `-m` untuk generate Prisma model file di prisma/models/
+- [Added] packages/bns-cli/bin/bns.mjs - parsing flag `-m` pada subcommand make/g
+- [Added] packages/bns-cli/lib/generate-module.mjs - eksekusi `npx prisma migrate dev --name add_<name>` otomatis saat flag -m

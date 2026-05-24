@@ -645,22 +645,32 @@ const moduleName = isMake ? args[1] : null;
 if (isMake) {
   showBanner();
 
+  const withModel = args.includes('-m');
+
   const error = validateModuleName(moduleName);
   if (error) {
     console.log();
     console.log(`  ${pc.red('✖')} ${error}`);
     console.log();
-    console.log(`  ${pc.dim('Usage:')} ${pc.cyan('npx @robyajo/bns-cli make <module-name>')}`);
-    console.log(`  ${pc.dim('       ')} ${pc.cyan('npx @robyajo/bns-cli g <module-name>')}`);
+    console.log(`  ${pc.dim('Usage:')} ${pc.cyan('npx @robyajo/bns-cli make <module-name> [-m]')}`);
+    console.log(`  ${pc.dim('       ')} ${pc.cyan('npx @robyajo/bns-cli g <module-name> [-m]')}`);
+    console.log(`  ${pc.dim('Flags:')}  ${pc.yellow('-m')}    ${pc.dim('Also generate Prisma model in prisma/models/')}`);
     console.log();
     exit(1);
   }
 
-  const result = generateModule(moduleName);
+  const result = generateModule(moduleName, { withModel });
   if (!result.ok) {
     console.log();
-    console.log(`  ${pc.red('✖')} ${result.error}`);
+    console.log(`  ${pc.red('✖')} ${result.error || result.migrationError}`);
     console.log();
+    if (result.files?.length > 0) {
+      console.log(`  ${pc.yellow('⚠')} These files were created before the error:`);
+      for (const file of result.files) {
+        console.log(`    ${pc.cyan('create')}  ${file}`);
+      }
+      console.log();
+    }
     exit(1);
   }
 
@@ -671,7 +681,11 @@ if (isMake) {
     console.log(`    ${pc.cyan('create')}  ${file}`);
   }
   console.log();
-  console.log(`  ${pc.dim('Next:')} Register routes in ${pc.cyan('src/modules/' + moduleName + '/' + moduleName + '.controller.ts')}`);
+  if (withModel) {
+    console.log(`  ${pc.dim('Next:')} Edit ${pc.cyan('prisma/models/' + moduleName + '.prisma')} to add your fields`);
+  } else {
+    console.log(`  ${pc.dim('Next:')} Register routes in ${pc.cyan('src/modules/' + moduleName + '/' + moduleName + '.controller.ts')}`);
+  }
   console.log();
   exit(0);
 }

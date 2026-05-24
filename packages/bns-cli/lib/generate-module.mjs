@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { execSync } from 'node:child_process';
 import { join, resolve } from 'node:path';
 import { cwd } from 'node:process';
 
@@ -18,16 +19,17 @@ export function validateModuleName(name) {
   return null;
 }
 
-export function generateModule(moduleName) {
-  const dir = resolve(cwd(), 'src', 'modules', moduleName);
+export function generateModule(moduleName, opts = {}) {
+  const Name = toPascalCase(moduleName);
+  const created = [];
 
-  if (existsSync(dir)) {
+  const moduleDir = resolve(cwd(), 'src', 'modules', moduleName);
+  if (existsSync(moduleDir)) {
     return { ok: false, error: `Module "${moduleName}" already exists at src/modules/${moduleName}` };
   }
 
-  mkdirSync(dir, { recursive: true });
+  mkdirSync(moduleDir, { recursive: true });
 
-  const Name = toPascalCase(moduleName);
   const files = {
     [`${moduleName}.module.ts`]: generateModuleFile(moduleName, Name),
     [`${moduleName}.controller.ts`]: generateControllerFile(moduleName, Name),
@@ -35,7 +37,8 @@ export function generateModule(moduleName) {
   };
 
   for (const [filename, content] of Object.entries(files)) {
-    writeFileSync(join(dir, filename), content);
+    writeFileSync(join(moduleDir, filename), content);
+    created.push(`src/modules/${moduleName}/${filename}`);
   }
 
   const appModulePath = resolve(cwd(), 'src', 'app.module.ts');
@@ -43,9 +46,34 @@ export function generateModule(moduleName) {
     updateAppModule(appModulePath, moduleName, Name);
   }
 
+  if (opts.withModel) {
+    const modelDir = resolve(cwd(), 'prisma', 'models');
+    if (!existsSync(modelDir)) {
+      mkdirSync(modelDir, { recursive: true });
+    }
+    const modelFile = `${moduleName}.prisma`;
+    writeFileSync(join(modelDir, modelFile), generatePrismaModelFile(moduleName, Name));
+    created.push(`prisma/models/${modelFile}`);
+
+    try {
+      execSync(`npx prisma migrate dev --name add_${moduleName}`, {
+        cwd: cwd(),
+        stdio: 'pipe',
+        timeout: 120000,
+      });
+      created.push(`prisma/migrations/ - migration "add_${moduleName}" created & applied`);
+    } catch (err) {
+      return {
+        ok: false,
+        files: created,
+        migrationError: `Migration failed: ${err.stderr?.toString() || err.message}`,
+      };
+    }
+  }
+
   return {
     ok: true,
-    files: Object.keys(files).map((f) => `src/modules/${moduleName}/${f}`),
+    files: created,
   };
 }
 
@@ -133,6 +161,15 @@ export class ${Name}Service {
   async remove(id: string) {
     return { id };
   }
+}
+`;
+}
+
+function generatePrismaModelFile(name, Name) {
+  return `model ${Name} {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 `;
 }
